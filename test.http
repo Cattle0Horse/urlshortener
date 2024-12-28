@@ -1,0 +1,29 @@
+### 重定向短链接
+GET http://localhost:8080/api/url/VKsSUK HTTP/1.1
+
+### 创建一个短链接，有效期 1 小时
+POST http://localhost:8080/api/url/ HTTP/1.1
+content-type: application/json
+x-user-id: 123456
+
+{
+    "original_url": "https://www.google.com/search?q=recursion",
+	"duration": 1
+}
+
+### 更新短链接的有效期
+PATCH http://localhost:8080/api/url/veSABo HTTP/1.1
+Content-Type: application/json
+x-user-id: 
+
+{
+	"expiry_time": "2024-12-30T00:00:00Z"
+}
+
+### 获取用户的短链接列表
+GET http://localhost:8080/api/url?page=1&size=10 HTTP/1.1
+x-user-id: 
+
+#### 删除短链接
+DELETE http://localhost:8080/api/url/veSABo HTTP/1.1
+x-user-id:

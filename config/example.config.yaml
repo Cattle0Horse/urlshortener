@@ -1,0 +1,16 @@
+database:
+  host: 0.0.0.0
+  port: 3306
+  user: root
+  password: 123456
+  dbname: urlshortener
+
+app:
+  env: "development"
+  server_address: "http://localhost:8080"
+  port: 8080
+  context_timeout: 2s
+  default_duration: 10h
+
+logger:
+  level: info
