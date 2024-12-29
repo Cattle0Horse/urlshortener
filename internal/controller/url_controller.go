@@ -1,26 +1,31 @@
 package controller
 
 import (
+	"context"
 	"net/http"
+	"time"
 
-	"github.com/Cattle0Horse/url-shortener/config"
 	"github.com/Cattle0Horse/url-shortener/internal/domain"
-	"github.com/Cattle0Horse/url-shortener/internal/repository"
-	"github.com/Cattle0Horse/url-shortener/internal/service"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-type UrlController struct {
-	UrlService domain.UrlService
+type UrlService interface {
+	Create(c context.Context, originalUrl string, duration *int, userID string) (string, error)
+	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error)
+	FetchOriginalUrl(c context.Context, shortCode string) (string, error)
+	Delete(c context.Context, shortCode string, userID string) error
+	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error
 }
 
-func NewUrlController(config *config.Config, db *gorm.DB) *UrlController {
-	ur := repository.NewUrlRepository(db)
-	uc := &UrlController{
-		UrlService: service.NewUrlService(ur, config.App.ContextTimeout, config.App.DefaultDuration, config.App.ServerAddress),
+type UrlController struct {
+	urlService UrlService
+}
+
+func NewUrlController(us UrlService) *UrlController {
+	return &UrlController{
+		urlService: us,
 	}
-	return uc
+
 }
 
 // 创建一个短链接
@@ -33,7 +38,7 @@ func (uc *UrlController) Create(c *gin.Context) {
 	}
 	userID := c.GetHeader("x-user-id") // 获取请求头中的x-user-id字段
 
-	shortUrl, err := uc.UrlService.Create(c, json.OriginalUrl, json.Duration, userID)
+	shortUrl, err := uc.urlService.Create(c, json.OriginalUrl, json.Duration, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
 		return
@@ -49,7 +54,7 @@ func (uc *UrlController) Create(c *gin.Context) {
 func (uc *UrlController) Redirect(c *gin.Context) {
 	shortCode := c.Param("code")
 
-	originalUrl, err := uc.UrlService.FetchOriginalUrl(c, shortCode)
+	originalUrl, err := uc.urlService.FetchOriginalUrl(c, shortCode)
 	if err != nil {
 		// 404 错误
 		c.JSON(http.StatusNotFound, domain.ErrorResponse{Messgae: err.Error()})
@@ -68,7 +73,7 @@ func (uc *UrlController) FetchAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Messgae: err.Error()})
 		return
 	}
-	urls, err := uc.UrlService.FetchAllByUserID(c, userID, q.Page, q.Size)
+	urls, err := uc.urlService.FetchAllByUserID(c, userID, q.Page, q.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
 		return
@@ -82,7 +87,7 @@ func (uc *UrlController) Delete(c *gin.Context) {
 	shortCode := c.Param("code")
 	userID := c.GetHeader("x-user-id") // 获取请求头中的x-user-id字段
 
-	if err := uc.UrlService.Delete(c, shortCode, userID); err != nil {
+	if err := uc.urlService.Delete(c, shortCode, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -102,7 +107,7 @@ func (uc *UrlController) UpdateByExpiryTime(c *gin.Context) {
 		return
 	}
 
-	if err := uc.UrlService.UpdateByExpiryTime(c, shortCode, json.ExpiryTime, userID); err != nil {
+	if err := uc.urlService.UpdateByExpiryTime(c, shortCode, json.ExpiryTime, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
 		return
 	}

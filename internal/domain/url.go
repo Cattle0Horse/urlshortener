@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"context"
 	"time"
 
 	"gorm.io/gorm"
@@ -20,23 +19,8 @@ type Url struct {
 }
 
 // --repository
-type UrlRepository interface {
-	Create(c context.Context, url *Url) error
-	FetchOriginalUrlByShortCode(c context.Context, shortCode string) (string, error)
-	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error
-	DeleteByShortCode(c context.Context, shortCode string, userID string) error
-	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]Url, error)
-	IsShortCodeAvailable(c context.Context, shortCode string) (bool, error)
-}
 
 // --service
-type UrlService interface {
-	Create(c context.Context, originalUrl string, duration *int, userID string) (string, error)
-	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]Url, error)
-	FetchOriginalUrl(c context.Context, shortCode string) (string, error)
-	Delete(c context.Context, shortCode string, userID string) error
-	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error
-}
 
 // --controller
 

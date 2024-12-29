@@ -37,7 +37,7 @@ func NewConfig(configFilePath string) (*Config, error) {
 
 type AppConfig struct {
 	Env             string        `mapstructure:"env"`
-	ServerAddress   string        `mapstructure:"server_address"`
+	BaseUrl         string        `mapstructure:"base_url"`
 	Port            string        `mapstructure:"port"`
 	ContextTimeout  time.Duration `mapstructure:"context_timeout"`
 	DefaultDuration time.Duration `mapstructure:"default_duration"`

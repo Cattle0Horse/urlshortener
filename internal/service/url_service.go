@@ -9,14 +9,22 @@ import (
 	"github.com/Cattle0Horse/url-shortener/internal/domain"
 )
 
+type UrlRepository interface {
+	Create(c context.Context, url *domain.Url) error
+	FetchOriginalUrlByShortCode(c context.Context, shortCode string) (string, error)
+	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error
+	DeleteByShortCode(c context.Context, shortCode string, userID string) error
+	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error)
+	IsShortCodeAvailable(c context.Context, shortCode string) (bool, error)
+}
 type urlService struct {
-	urlRepository   domain.UrlRepository
+	urlRepository   UrlRepository
 	contextTimeout  time.Duration
 	defaultDuration time.Duration
 	serverAddress   string
 }
 
-func NewUrlService(urlRepository domain.UrlRepository, timeout time.Duration, defaultDuration time.Duration, serverAddress string) domain.UrlService {
+func NewUrlService(urlRepository UrlRepository, timeout time.Duration, defaultDuration time.Duration, serverAddress string) *urlService {
 	return &urlService{
 		urlRepository:   urlRepository,
 		contextTimeout:  timeout,

@@ -12,7 +12,7 @@ type urlRepository struct {
 	database *gorm.DB
 }
 
-func NewUrlRepository(database *gorm.DB) domain.UrlRepository {
+func NewUrlRepository(database *gorm.DB) *urlRepository {
 	return &urlRepository{
 		database: database,
 	}
