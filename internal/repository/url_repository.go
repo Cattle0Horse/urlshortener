@@ -22,6 +22,7 @@ func (ur *urlRepository) Create(c context.Context, url *domain.Url) error {
 	result := ur.database.Create(url)
 	return result.Error
 }
+
 func (ur *urlRepository) FetchOriginalUrlByShortCode(c context.Context, shortCode string) (string, error) {
 	var url domain.Url
 	result := ur.database.Where("short_code = ?", shortCode).First(&url)
@@ -30,6 +31,7 @@ func (ur *urlRepository) FetchOriginalUrlByShortCode(c context.Context, shortCod
 	}
 	return url.OriginalUrl, nil
 }
+
 func (ur *urlRepository) UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error {
 	var url domain.Url
 	result := ur.database.Model(&url).Where("short_code = ? AND user_id = ? AND deleted_at IS NULL", shortCode, userID).Update("expiry_time", expiryTime)
@@ -38,6 +40,7 @@ func (ur *urlRepository) UpdateByExpiryTime(c context.Context, shortCode string,
 	}
 	return nil
 }
+
 func (ur *urlRepository) DeleteByShortCode(c context.Context, shortCode string, userID string) error {
 	var url domain.Url
 	result := ur.database.Model(&url).Where("short_code = ? AND user_id = ? AND deleted_at IS NULL", shortCode, userID).Update("deleted_at", time.Now())
@@ -46,6 +49,7 @@ func (ur *urlRepository) DeleteByShortCode(c context.Context, shortCode string, 
 	}
 	return nil
 }
+
 func (ur *urlRepository) FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error) {
 	var urls []domain.Url
 	result := ur.database.Where("user_id = ? AND deleted_at IS NULL", userID).Offset((page - 1) * size).Limit(size).Find(&urls)
@@ -54,6 +58,7 @@ func (ur *urlRepository) FetchAllByUserID(c context.Context, userID string, page
 	}
 	return urls, nil
 }
+
 func (ur *urlRepository) IsShortCodeAvailable(c context.Context, shortCode string) (bool, error) {
 	// 查询短代码是否已经存在
 	var url domain.Url

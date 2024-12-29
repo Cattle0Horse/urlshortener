@@ -25,7 +25,6 @@ func NewUrlController(us UrlService) *UrlController {
 	return &UrlController{
 		urlService: us,
 	}
-
 }
 
 // 创建一个短链接
@@ -73,11 +72,13 @@ func (uc *UrlController) FetchAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Messgae: err.Error()})
 		return
 	}
+
 	urls, err := uc.urlService.FetchAllByUserID(c, userID, q.Page, q.Size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, urls)
 }
 

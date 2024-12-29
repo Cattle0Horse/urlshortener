@@ -17,6 +17,7 @@ type UrlRepository interface {
 	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error)
 	IsShortCodeAvailable(c context.Context, shortCode string) (bool, error)
 }
+
 type urlService struct {
 	urlRepository   UrlRepository
 	contextTimeout  time.Duration
