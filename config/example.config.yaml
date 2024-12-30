@@ -14,3 +14,17 @@ app:
 
 logger:
   level: info
+
+jwt:
+  access_token_secret: access_token_secret
+  access_token_duration: 2h
+  refresh_token_secret: access_token_secret
+  refresh_token_duration: 168h
+
+email:
+  password: 
+  username: 
+  host_address: smtp.mailersend.net
+  host_port: 
+  subject: "This is my test mail"
+  test_mail: 

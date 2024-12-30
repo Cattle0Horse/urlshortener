@@ -25,10 +25,6 @@ export function Navbar() {
       name: "我的短链接",
       href: "/urls",
     },
-    {
-      name: "抑郁症自测",
-      href: "/help",
-    },
   ];
 
   return (

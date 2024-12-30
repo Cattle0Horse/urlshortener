@@ -3,14 +3,13 @@ package logger
 import (
 	"os"
 
-	"github.com/Cattle0Horse/url-shortener/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 var Log *zap.Logger
 
-func InitLogger(cfg *config.LogConfig) {
+func InitLogger(level string) {
 
 	// 创建基础配置
 	encoderConfig := zap.NewProductionEncoderConfig()
@@ -19,25 +18,25 @@ func InitLogger(cfg *config.LogConfig) {
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 
 	// 设置日志级别
-	var level zapcore.Level
-	switch cfg.Level {
+	var zLevel zapcore.Level
+	switch level {
 	case "debug":
-		level = zapcore.DebugLevel
+		zLevel = zapcore.DebugLevel
 	case "info":
-		level = zapcore.InfoLevel
+		zLevel = zapcore.InfoLevel
 	case "warn":
-		level = zapcore.WarnLevel
+		zLevel = zapcore.WarnLevel
 	case "error":
-		level = zapcore.ErrorLevel
+		zLevel = zapcore.ErrorLevel
 	default:
-		level = zapcore.InfoLevel
+		zLevel = zapcore.InfoLevel
 	}
 
 	// 创建Core
 	fileCore := zapcore.NewCore(
 		zapcore.NewJSONEncoder(encoderConfig),
 		zapcore.AddSync(os.Stdout),
-		level,
+		zLevel,
 	)
 
 	// 创建Logger

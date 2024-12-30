@@ -20,15 +20,18 @@ func NewApp(configFilePath string) (*App, error) {
 		return nil, err
 	}
 
-	logger.InitLogger(&config.Logger)
+	logger.InitLogger(config.Logger.Level)
 
-	mysql, err := database.NewMysql(&config.Database)
+	mysql, err := database.NewMysql(config.Database)
 	if err != nil {
 		return nil, err
 	}
 
 	gin := NewGin()
-	setupRouter(gin, config, mysql)
+	err = setupRouter(gin, config, mysql)
+	if err != nil {
+		return nil, err
+	}
 
 	return &App{
 		config: config,

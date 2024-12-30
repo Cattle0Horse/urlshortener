@@ -102,7 +102,7 @@ export default function Home() {
                 )}
               />
               <div className="flex w-full space-x-10">
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="customCode"
                   render={({ field }) => (
@@ -117,13 +117,13 @@ export default function Home() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 <FormField
                   control={form.control}
                   name="duration"
                   render={({ field }) => (
-                    <FormItem className="w-1/3">
+                    <FormItem className="w-full">
                       <FormLabel>有效时长(可选)</FormLabel>
                       <FormControl>
                         <Input placeholder="10" type="number" {...field} />

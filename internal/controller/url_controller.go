@@ -1,49 +1,40 @@
 package controller
 
 import (
-	"context"
 	"net/http"
-	"time"
 
-	"github.com/Cattle0Horse/url-shortener/internal/domain"
+	"github.com/Cattle0Horse/url-shortener/internal/schema"
+	"github.com/Cattle0Horse/url-shortener/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
-type UrlService interface {
-	Create(c context.Context, originalUrl string, duration *int, userID string) (string, error)
-	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error)
-	FetchOriginalUrl(c context.Context, shortCode string) (string, error)
-	Delete(c context.Context, shortCode string, userID string) error
-	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error
-}
-
 type UrlController struct {
-	urlService UrlService
+	urlService *service.UrlService
 }
 
-func NewUrlController(us UrlService) *UrlController {
+func NewUrlController(urlService *service.UrlService) *UrlController {
 	return &UrlController{
-		urlService: us,
+		urlService: urlService,
 	}
 }
 
 // 创建一个短链接
 // POST /api/url
 func (uc *UrlController) Create(c *gin.Context) {
-	var json domain.CreateUrlRequest
+	var json schema.CreateUrlRequest
 	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Messgae: err.Error()})
+		c.JSON(http.StatusBadRequest, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
-	userID := c.GetHeader("x-user-id") // 获取请求头中的x-user-id字段
+	userID := c.GetInt("userID")
 
-	shortUrl, err := uc.urlService.Create(c, json.OriginalUrl, json.Duration, userID)
+	shortUrl, err := uc.urlService.Create(c, json.OriginalUrl, json.Duration, uint(userID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
+		c.JSON(http.StatusInternalServerError, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, domain.CreateUrlResponse{
+	c.JSON(http.StatusCreated, schema.CreateUrlResponse{
 		ShortUrl: shortUrl,
 	})
 }
@@ -56,7 +47,7 @@ func (uc *UrlController) Redirect(c *gin.Context) {
 	originalUrl, err := uc.urlService.FetchOriginalUrl(c, shortCode)
 	if err != nil {
 		// 404 错误
-		c.JSON(http.StatusNotFound, domain.ErrorResponse{Messgae: err.Error()})
+		c.JSON(http.StatusNotFound, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
 	// 永久重定向
@@ -66,16 +57,23 @@ func (uc *UrlController) Redirect(c *gin.Context) {
 // 获取用户所有短链接
 // GET /api/url?page=1&size=10
 func (uc *UrlController) FetchAll(c *gin.Context) {
-	userID := c.GetHeader("x-user-id") // 获取请求头中的x-user-id字段
-	var q domain.FetchAllRequest
+	userID := c.GetInt("userID")
+	var q schema.FetchAllRequest
 	if err := c.ShouldBindQuery(&q); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Messgae: err.Error()})
+		c.JSON(http.StatusBadRequest, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
+	if q.Page == 0 {
+		q.Page = 1
+	}
 
-	urls, err := uc.urlService.FetchAllByUserID(c, userID, q.Page, q.Size)
+	if q.Size == 0 {
+		q.Size = 10
+	}
+
+	urls, err := uc.urlService.FetchAllByUserID(c, uint(userID), q.Page, q.Size)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
+		c.JSON(http.StatusInternalServerError, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -86,9 +84,9 @@ func (uc *UrlController) FetchAll(c *gin.Context) {
 // DELETE /api/url/:code
 func (uc *UrlController) Delete(c *gin.Context) {
 	shortCode := c.Param("code")
-	userID := c.GetHeader("x-user-id") // 获取请求头中的x-user-id字段
+	userID := c.GetInt("userID")
 
-	if err := uc.urlService.Delete(c, shortCode, userID); err != nil {
+	if err := uc.urlService.Delete(c, shortCode, uint(userID)); err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -100,16 +98,16 @@ func (uc *UrlController) Delete(c *gin.Context) {
 // PATCH /api/url/:code
 func (uc *UrlController) UpdateByExpiryTime(c *gin.Context) {
 	shortCode := c.Param("code")
-	userID := c.GetHeader("x-user-id") // 获取请求头中的x-user-id字段
-	var json domain.UpdateByExpiryTimeRequest
+	userID := c.GetInt("userID")
+	var json schema.UpdateByExpiryTimeRequest
 
 	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Messgae: err.Error()})
+		c.JSON(http.StatusBadRequest, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	if err := uc.urlService.UpdateByExpiryTime(c, shortCode, json.ExpiryTime, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Messgae: err.Error()})
+	if err := uc.urlService.UpdateByExpiryTime(c, shortCode, json.ExpiryTime, uint(userID)); err != nil {
+		c.JSON(http.StatusInternalServerError, schema.ErrorResponse{Message: err.Error()})
 		return
 	}
 

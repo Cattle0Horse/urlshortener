@@ -9,9 +9,12 @@ import (
 )
 
 type Config struct {
-	App      AppConfig      `mapstructure:"app"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Logger   LogConfig      `mapstructure:"logger"`
+	App      *AppConfig      `mapstructure:"app"`
+	Database *DatabaseConfig `mapstructure:"database"`
+	Redis    *RedisConfig    `mapstructure:"redis"`
+	Logger   *LogConfig      `mapstructure:"logger"`
+	JWT      *JWTConfig      `mapstructure:"jwt"`
+	Email    *EmailConfig    `mapstructure:"email"`
 }
 
 func NewConfig(configFilePath string) (*Config, error) {
@@ -55,6 +58,30 @@ func (dc *DatabaseConfig) DSN() string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", dc.User, dc.Password, dc.Host, dc.Port, dc.DbName)
 }
 
+type RedisConfig struct {
+	Address           string        `mapstructure:"address"`
+	Password          string        `mapstructure:"password"`
+	DB                int           `mapstructure:"db"`
+	UrlDuration       time.Duration `mapstructure:"url_duration"`
+	EmailCodeDuration time.Duration `mapstructure:"email_code_duration"`
+}
+
 type LogConfig struct {
 	Level string `mapstructure:"level"`
+}
+
+type JWTConfig struct {
+	AccessTokenSecret   string        `mapstructure:"access_token_secret"`
+	AccessTokenDuration time.Duration `mapstructure:"access_token_duration"`
+	// RefreshTokenSecret   string        `mapstructure:"refresh_token_secret"`
+	// RefreshTokenDuration time.Duration `mapstructure:"refresh_token_duration"`
+}
+
+type EmailConfig struct {
+	Password    string `mapstructure:"password"`
+	Username    string `mapstructure:"username"`
+	HostAddress string `mapstructure:"host_address"`
+	HostPort    string `mapstructure:"host_port"`
+	Subject     string `mapstructure:"subject"`
+	TestMail    string `mapstructure:"test_mail"`
 }

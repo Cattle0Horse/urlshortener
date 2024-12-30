@@ -6,39 +6,34 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/Cattle0Horse/url-shortener/internal/domain"
+	"github.com/Cattle0Horse/url-shortener/internal/entity"
 )
 
 type UrlRepository interface {
-	Create(c context.Context, url *domain.Url) error
+	Create(c context.Context, url *entity.Url) error
 	FetchOriginalUrlByShortCode(c context.Context, shortCode string) (string, error)
-	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error
-	DeleteByShortCode(c context.Context, shortCode string, userID string) error
-	FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error)
+	UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID uint) error
+	DeleteByShortCode(c context.Context, shortCode string, userID uint) error
+	FetchAllByUserID(c context.Context, userID uint, page int, size int) ([]entity.Url, error)
 	IsShortCodeAvailable(c context.Context, shortCode string) (bool, error)
 }
 
-type urlService struct {
+type UrlService struct {
 	urlRepository   UrlRepository
-	contextTimeout  time.Duration
 	defaultDuration time.Duration
 	serverAddress   string
 }
 
-func NewUrlService(urlRepository UrlRepository, timeout time.Duration, defaultDuration time.Duration, serverAddress string) *urlService {
-	return &urlService{
+func NewUrlService(urlRepository UrlRepository, defaultDuration time.Duration, serverAddress string) *UrlService {
+	return &UrlService{
 		urlRepository:   urlRepository,
-		contextTimeout:  timeout,
 		defaultDuration: defaultDuration,
 		serverAddress:   serverAddress,
 	}
 }
 
-func (us *urlService) Create(c context.Context, originalUrl string, duration *int, userID string) (string, error) {
-	ctx, cancel := context.WithTimeout(c, us.contextTimeout)
-	defer cancel()
-
-	shortCode, err := us.generatorShortCode(ctx)
+func (us *UrlService) Create(c context.Context, originalUrl string, duration *int, userID uint) (string, error) {
+	shortCode, err := us.generatorShortCode(c)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +44,7 @@ func (us *urlService) Create(c context.Context, originalUrl string, duration *in
 	} else {
 		expiryTime = time.Now().Add(time.Hour * time.Duration(*duration))
 	}
-	url := &domain.Url{
+	url := &entity.Url{
 		OriginalUrl: originalUrl,
 		ShortCode:   shortCode,
 		ExpiryTime:  expiryTime,
@@ -57,7 +52,7 @@ func (us *urlService) Create(c context.Context, originalUrl string, duration *in
 	}
 
 	// 插入数据库
-	err = us.urlRepository.Create(ctx, url)
+	err = us.urlRepository.Create(c, url)
 	if err != nil {
 		return "", err
 	}
@@ -66,52 +61,41 @@ func (us *urlService) Create(c context.Context, originalUrl string, duration *in
 	return shortUrl, nil
 }
 
-func (us *urlService) FetchAllByUserID(c context.Context, userID string, page int, size int) ([]domain.Url, error) {
-	ctx, cancel := context.WithTimeout(c, us.contextTimeout)
-	defer cancel()
-
-	urls, err := us.urlRepository.FetchAllByUserID(ctx, userID, page, size)
+func (us *UrlService) FetchAllByUserID(c context.Context, userID uint, page int, size int) ([]entity.Url, error) {
+	urls, err := us.urlRepository.FetchAllByUserID(c, userID, page, size)
 	if err != nil {
 		return nil, err
 	}
 	return urls, nil
 }
 
-func (us *urlService) FetchOriginalUrl(c context.Context, shortCode string) (string, error) {
-	ctx, cancel := context.WithTimeout(c, us.contextTimeout)
-	defer cancel()
-
+func (us *UrlService) FetchOriginalUrl(c context.Context, shortCode string) (string, error) {
 	// 访问数据库
-	originalUrl, err := us.urlRepository.FetchOriginalUrlByShortCode(ctx, shortCode)
+	originalUrl, err := us.urlRepository.FetchOriginalUrlByShortCode(c, shortCode)
 	if err != nil {
 		return "", err
 	}
 	return originalUrl, nil
 }
 
-func (us *urlService) Delete(c context.Context, shortCode string, userID string) error {
-	ctx, cancel := context.WithTimeout(c, us.contextTimeout)
-	defer cancel()
-
-	err := us.urlRepository.DeleteByShortCode(ctx, shortCode, userID)
+func (us *UrlService) Delete(c context.Context, shortCode string, userID uint) error {
+	err := us.urlRepository.DeleteByShortCode(c, shortCode, userID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (us *urlService) UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID string) error {
-	ctx, cancel := context.WithTimeout(c, us.contextTimeout)
-	defer cancel()
+func (us *UrlService) UpdateByExpiryTime(c context.Context, shortCode string, expiryTime time.Time, userID uint) error {
 
-	err := us.urlRepository.UpdateByExpiryTime(ctx, shortCode, expiryTime, userID)
+	err := us.urlRepository.UpdateByExpiryTime(c, shortCode, expiryTime, userID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (us *urlService) generatorShortCode(c context.Context) (string, error) {
+func (us *UrlService) generatorShortCode(c context.Context) (string, error) {
 	// todo: change the function
 	var recursive func(int) (string, error)
 	recursive = func(n int) (string, error) {

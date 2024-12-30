@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/Cattle0Horse/url-shortener/config"
-	"github.com/Cattle0Horse/url-shortener/internal/domain"
+	"github.com/Cattle0Horse/url-shortener/internal/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -31,6 +31,6 @@ func NewMysql(dc *config.DatabaseConfig) (*gorm.DB, error) {
 
 func migrate(db *gorm.DB) (err error) {
 	err = db.Set("gorm:table_options", "ENGINE=InnoDB").
-		AutoMigrate(&domain.Url{})
+		AutoMigrate(&entity.Url{}, &entity.User{})
 	return
 }
