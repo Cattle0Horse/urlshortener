@@ -23,7 +23,7 @@ export function Navbar() {
     },
     {
       name: "我的短链接",
-      href: "/urls",
+      href: "/url",
     },
   ];
 
