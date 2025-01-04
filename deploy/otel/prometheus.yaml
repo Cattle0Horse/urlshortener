@@ -2,6 +2,15 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+rule_files:
+  - "/etc/prometheus/rules/*.rules"
+
 scrape_configs:
   - job_name: "prometheus"
     static_configs:
@@ -9,3 +18,7 @@ scrape_configs:
   - job_name: "tempo"
     static_configs:
       - targets: [ "tempo:3200" ]
+  - job_name: "url-shortener"
+    metrics_path: /metrics
+    static_configs:
+      - targets: [ "url-shortener:8080" ]
