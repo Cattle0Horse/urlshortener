@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  shorturl:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+      - mysql
+    environment:
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+    restart: always
+    
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    
+  mysql:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=shorturl 

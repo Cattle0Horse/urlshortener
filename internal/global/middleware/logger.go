@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"github.com/Cattle0Horse/url-shortener/internal/global/otel"
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"time"
@@ -18,14 +17,6 @@ func Logger(log *slog.Logger) gin.HandlerFunc {
 		// 结束时间
 		endTime := time.Now()
 		latency := endTime.Sub(startTime)
-
-		// 记录监控指标
-		otel.RecordRequestMetrics(
-			c.Request.Method,
-			c.Request.URL.Path,
-			c.Writer.Status(),
-			latency,
-		)
 
 		// 记录请求日志
 		log.Info("Request",

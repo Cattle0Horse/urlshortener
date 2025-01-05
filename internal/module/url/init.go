@@ -28,11 +28,12 @@ func (p *ModuleUrl) Init() {
 	case true:
 		log = logger.Get()
 	}
+	cfg := config.Get().Server
 	// http协议
-	if config.Get().Port == "8080" {
-		baseUrl = "http://" + config.Get().Host + config.Get().Prefix
+	if cfg.Port == "8080" {
+		baseUrl = "http://" + cfg.Host + cfg.Prefix
 	} else {
-		baseUrl = "http://" + config.Get().Host + ":" + config.Get().Port + config.Get().Prefix
+		baseUrl = "http://" + cfg.Host + ":" + cfg.Port + cfg.Prefix
 	}
 }
 

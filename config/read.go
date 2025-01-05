@@ -1,10 +1,7 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/Cattle0Horse/url-shortener/tools"
-	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/viper"
 )
 
@@ -22,8 +19,9 @@ func Init(path ...string) {
 		tools.PanicOnErr(viper.ReadInConfig())
 		tools.PanicOnErr(viper.Unmarshal(&c))
 	} else {
-		fmt.Println("Config file not exist in ", filePath, ". Using environment variables.")
-		tools.PanicOnErr(envconfig.Process("", c))
+		panic("Config file not exist in " + filePath)
+		// fmt.Println("Config file not exist in ", filePath, ". Using environment variables.")
+		// tools.PanicOnErr(envconfig.Process("", c))
 	}
 }
 
@@ -36,9 +34,9 @@ func Get() *Config {
 }
 
 func IsRelease() bool {
-	return c.Mode == ModeRelease
+	return c.Server.Mode == ModeRelease
 }
 
 func IsDebug() bool {
-	return c.Mode == ModeDebug
+	return c.Server.Mode == ModeDebug
 }

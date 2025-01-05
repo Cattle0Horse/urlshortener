@@ -16,7 +16,7 @@ var (
 func Get() *slog.Logger {
 	once.Do(func() {
 		var handler slog.Handler
-		switch config.Get().Mode {
+		switch config.Get().Server.Mode {
 		case config.ModeDebug:
 			handler = slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{AddSource: false})
 		case config.ModeRelease:

@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/Cattle0Horse/url-shortener/internal/global/database"
+	"github.com/Cattle0Horse/url-shortener/internal/global/database/mysql"
 	"github.com/Cattle0Horse/url-shortener/internal/global/errs"
 	"github.com/Cattle0Horse/url-shortener/internal/global/jwt"
 	"github.com/Cattle0Horse/url-shortener/tools"
@@ -16,7 +16,7 @@ func Login(c *gin.Context) {
 		errs.Fail(c, errs.InvalidRequest.WithTips(err.Error()))
 		return
 	}
-	u := database.Query.User
+	u := mysql.Query.User
 	userInfo, err := u.WithContext(c.Request.Context()).Where(u.Email.Eq(req.Email)).First()
 	switch {
 	case errors.Is(err, gorm.ErrRecordNotFound):

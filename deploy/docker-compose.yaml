@@ -6,7 +6,7 @@ networks:
 
 services:
   app:
-    image: nxofficial/url-shortener:latest
+    image: cattlehorse/url-shortener:latest
     container_name: url-shortener-app
     volumes:
       - ./config.yaml:/app/config.yaml
@@ -33,16 +33,6 @@ services:
       retries: 3
       start_period: 10s
     privileged: true
-    restart: always
-    networks:
-      - url-shortener-net
-
-  watchtower:
-    image: containrrr/watchtower
-    container_name: url-shortener-watchtower
-    command: --interval 5
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # 需要将 Docker 的 sock 映射进去以控制 Docker
     restart: always
     networks:
       - url-shortener-net

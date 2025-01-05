@@ -1,13 +1,10 @@
 package errs
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/Cattle0Horse/url-shortener/config"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"net/http"
 )
 
@@ -51,9 +48,7 @@ func Fail(c *gin.Context, err error) {
 }
 
 func writeResponse(c *gin.Context, code int, response ResponseBody) {
-	body, _ := json.Marshal(response)
-	span := trace.SpanFromContext(c.Request.Context())
-	span.SetAttributes(attribute.KeyValue{Key: "http.response.body", Value: attribute.StringValue(string(body))})
+	// body, _ := json.Marshal(response)
 	c.JSON(code, response)
 }
 

@@ -3,3 +3,4 @@ config/config.yaml
 config/config.go.back
 config/config.yaml.back
 .vscode
+example

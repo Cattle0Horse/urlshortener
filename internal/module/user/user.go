@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/Cattle0Horse/url-shortener/internal/global/database"
+	"github.com/Cattle0Horse/url-shortener/internal/global/database/mysql"
 	"github.com/Cattle0Horse/url-shortener/internal/global/errs"
 	"github.com/Cattle0Horse/url-shortener/internal/model"
 	"github.com/Cattle0Horse/url-shortener/tools"
@@ -11,7 +11,7 @@ import (
 
 type User struct {
 	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6,max=12"`
+	Password string `json:"password" binding:"required,min=8,max=20"`
 }
 
 type CreateRequest struct {
@@ -27,7 +27,7 @@ func Create(c *gin.Context) {
 	user := &model.User{}
 	_ = copier.Copy(user, &req)
 	log.Info("Creating User", "user email", user.Email)
-	err := database.Query.User.WithContext(c.Request.Context()).Create(user)
+	err := mysql.Query.User.WithContext(c.Request.Context()).Create(user)
 	switch {
 	case tools.IsDuplicateKeyError(err):
 		log.Info("email exist", "email", user.Email)

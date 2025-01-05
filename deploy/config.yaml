@@ -1,13 +1,7 @@
 Host: "0.0.0.0"
 Port: "8080"
-Prefix: "/"
+Prefix: ""
 Mode: "release"
-
-OTel:
-  Enable: true
-  ServiceName: "url-shortener"
-  AgentHost: "tempo"
-  AgentPort: "4318"
 
 Mysql:
   Host: "mysql"

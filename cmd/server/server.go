@@ -5,12 +5,13 @@ import (
 	"log/slog"
 
 	"github.com/Cattle0Horse/url-shortener/config"
-	"github.com/Cattle0Horse/url-shortener/internal/global/database"
+	"github.com/Cattle0Horse/url-shortener/internal/global/database/mysql"
+	"github.com/Cattle0Horse/url-shortener/internal/global/jwt"
 	"github.com/Cattle0Horse/url-shortener/internal/global/logger"
 	"github.com/Cattle0Horse/url-shortener/internal/global/middleware"
-	"github.com/Cattle0Horse/url-shortener/internal/global/otel"
 	"github.com/Cattle0Horse/url-shortener/internal/module"
 	"github.com/Cattle0Horse/url-shortener/tools"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,13 +19,11 @@ var log *slog.Logger
 
 func Init() {
 	config.Init()
+	jwt.Init(config.Get().JWT)
+
 	log = logger.New("Server")
 
-	database.Init()
-
-	if config.Get().OTel.Enable {
-		otel.Init()
-	}
+	mysql.Init()
 
 	for _, m := range module.Modules {
 		log.Info(fmt.Sprintf("Init Module: %s", m.GetName()))
@@ -33,26 +32,25 @@ func Init() {
 }
 
 func Run() {
-	gin.SetMode(string(config.Get().Mode))
+	cfg := config.Get().Server
+	gin.SetMode(string(cfg.Mode))
 	r := gin.New()
 
-	switch config.Get().Mode {
+	switch cfg.Mode {
 	case config.ModeRelease:
 		r.Use(middleware.Logger(logger.Get()))
 	case config.ModeDebug:
 		r.Use(gin.Logger())
 	}
 
+	// 跨域
+	r.Use(cors.Default())
 	r.Use(middleware.Recovery())
-
-	if config.Get().OTel.Enable {
-		r.Use(middleware.Trace())
-	}
 
 	for _, m := range module.Modules {
 		log.Info(fmt.Sprintf("Init Router: %s", m.GetName()))
-		m.InitRouter(r.Group(config.Get().Prefix))
+		m.InitRouter(r.Group(cfg.Prefix))
 	}
-	err := r.Run(config.Get().Host + ":" + config.Get().Port)
+	err := r.Run(cfg.Host + ":" + cfg.Port)
 	tools.PanicOnErr(err)
 }

@@ -23,10 +23,11 @@ def launch_redis [] {
 }
 
 def gen_config_struct_tag [] {
-    (
-        gomodifytags -all
-            -add-tags json,yaml,mapstructure
-            -w
-            -file "config/config.go"
-    )
+    let files = ["config" "cache", "jwt", "mysql", "server", "tddl", "url"]
+    $files | each { |name| (
+        gomodifytags -all -w
+            -add-tags yaml,mapstructure
+            -transform snakecase
+            -file $"config/($name).go"
+    )}
 }

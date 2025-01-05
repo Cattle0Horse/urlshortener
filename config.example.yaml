@@ -1,13 +1,7 @@
 Host: "0.0.0.0"
-Port: "8080"
+Port: "9090"
 Prefix: ""
 Mode: "debug"
-
-OTel:
-    Enable: false
-    ServiceName: "url-shortener"
-    AgentHost: "localhost"
-    AgentPort: "4318"
 
 Mysql:
     Host: "127.0.0.1"
@@ -15,3 +9,10 @@ Mysql:
     Username: "root"
     Password: "12345678"
     DBName: "url-shortener"
+
+JWT:
+    AccessSecret: "my-secret"
+    AccessExpire: 24h
+
+Url:
+    DefaultDuration: 24h

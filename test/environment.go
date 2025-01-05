@@ -2,14 +2,15 @@ package test
 
 import (
 	"context"
+	"os"
+	"testing"
+
 	"github.com/Cattle0Horse/url-shortener/config"
-	"github.com/Cattle0Horse/url-shortener/internal/global/database"
+	"github.com/Cattle0Horse/url-shortener/internal/global/database/mysql"
 	"github.com/Cattle0Horse/url-shortener/tools"
 	"github.com/stretchr/testify/require"
 	tc "github.com/testcontainers/testcontainers-go/modules/compose"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"os"
-	"testing"
 )
 
 const (
@@ -37,5 +38,5 @@ func SetupEnvironment(t *testing.T) {
 	)
 
 	config.Init(tools.SearchFile(ConfigFilName))
-	database.Init()
+	mysql.Init()
 }

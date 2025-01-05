@@ -1,17 +1,17 @@
-FROM golang:latest as go-build-stage
-
-ENV GOPROXY https://goproxy.cn,direct
-
-WORKDIR /go/src/app
-
-COPY . .
-
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
-
-FROM scratch
+FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
+COPY . .
 
-COPY --from=go-build-stage /go/src/app/main .
+RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux go build -o shorturl ./cmd/server
 
-CMD ["./main"]
+FROM alpine:latest
+
+WORKDIR /app
+COPY --from=builder /app/shorturl .
+COPY config.yaml .
+
+EXPOSE 8080
+
+ENTRYPOINT ["./shorturl"]
