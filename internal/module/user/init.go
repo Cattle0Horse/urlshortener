@@ -1,3 +1,5 @@
+// Provide init function and global variables for user module,
+// it will be called by `cmd/server/server.go`
 package user
 
 import (
@@ -18,7 +20,7 @@ func (u *ModuleUser) GetName() string {
 func (u *ModuleUser) Init() {
 	switch test.IsTest() {
 	case false:
-		log = logger.New("User")
+		log = logger.NewModule("User")
 	case true:
 		log = logger.Get()
 	}

@@ -5,7 +5,7 @@ import "time"
 // Redis is the redis config
 type Redis struct {
 	// Addr is the redis address
-	Addr []string `validate:"required" yaml:"addr" mapstructure:"addr"`
+	Addrs []string `validate:"required" yaml:"addrs" mapstructure:"addrs"`
 	// DialTimeout Dial timeout for establishing new connections.
 	// Default is 5 seconds.
 	DialTimeout time.Duration `validate:"required" yaml:"dial_timeout" mapstructure:"dial_timeout"`

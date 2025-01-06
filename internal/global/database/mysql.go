@@ -1,4 +1,4 @@
-package mysql
+package database
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/Cattle0Horse/url-shortener/config"
 	"github.com/Cattle0Horse/url-shortener/internal/global/query"
 	"github.com/Cattle0Horse/url-shortener/internal/model"
-	"github.com/Cattle0Horse/url-shortener/tools"
+	"github.com/Cattle0Horse/url-shortener/pkg/tools"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -14,6 +14,7 @@ import (
 )
 
 var Query *query.Query
+var DB *gorm.DB
 
 func Init() {
 	cfg := config.Get().MySQL
@@ -33,19 +34,19 @@ func Init() {
 	case config.ModeRelease:
 		gormConfig.Logger = logger.Discard
 	}
+	var err error
+	DB, err = gorm.Open(mysql.Open(cfg.DSN()), gormConfig)
 
-	db, err := gorm.Open(mysql.Open(cfg.DSN()), gormConfig)
 	tools.PanicOnErr(err)
 
-	sqlDB, err := db.DB()
+	sqlDB, err := DB.DB()
 	tools.PanicOnErr(err)
-
 	sqlDB.SetMaxIdleConns(cfg.MaxConn)
 	sqlDB.SetMaxOpenConns(cfg.MaxConn)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 	sqlDB.SetConnMaxIdleTime(time.Minute)
 
 	// tools.PanicOnErr(db.Use(otel.GetGormPlugin()))
-	tools.PanicOnErr(db.AutoMigrate(model.User{}, model.Url{}))
-	Query = query.Use(db)
+	tools.PanicOnErr(DB.AutoMigrate(model.User{}, model.Url{}))
+	Query = query.Use(DB)
 }

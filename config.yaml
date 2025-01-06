@@ -25,6 +25,8 @@ jwt:
 
 url:
     default_duration: 24h
+    bloom_filter_size: 100000000
+    bloom_filter_false_positive_rate: 0.01
 
 tddl:
     start_num: 700000000
@@ -33,7 +35,7 @@ tddl:
 
 cache:
     redis:
-        addr: ["redis:6379"]
+        addrs: ["redis:6379"]
         dial_timeout: "5s"
         max_conn: 25
         ttl: 1800s

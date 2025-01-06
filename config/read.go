@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/Cattle0Horse/url-shortener/tools"
+	"github.com/Cattle0Horse/url-shortener/pkg/tools"
 	"github.com/spf13/viper"
 )
 

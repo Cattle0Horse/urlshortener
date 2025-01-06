@@ -30,15 +30,20 @@ var (
 	NotFound           = newError(40002, "目标不存在")
 	HasExist           = newError(40003, "目标已存在")
 	InvalidPassword    = newError(40004, "密码错误")
-	ErrTokenInvalid    = newError(40005, "无效的token")
+	InvaildToken       = newError(40005, "无效的token")
+	InvalidPathParams  = newError(40007, "无效的路径参数")
 	EmptyAuthorization = newError(40006, "Authorization请求头为空")
+	Forbidden          = newError(40007, "禁止访问")
 )
 
 // 500 INTERNAL ERROR
 var (
-	serverInternal = newError(50001, "服务器内部错误")
-	DatabaseError  = newError(50002, "数据库错误")
-	ErrCreateToken = newError(50003, "生成token失败")
+	errServerInternal  = newError(50001, "服务器内部错误")
+	ErrDatabase        = newError(50002, "数据库错误")
+	FailedCreateToken  = newError(50003, "生成token失败")
+	FailedGenShortCode = newError(50004, "生成短代码失败")
+	ErrBloomFilter     = newError(50005, "布隆过滤器错误")
+	ErrCache           = newError(50006, "缓存错误")
 )
 
 // TODO: i18n

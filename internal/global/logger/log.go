@@ -27,7 +27,16 @@ func Get() *slog.Logger {
 	return instance
 }
 
-// New 创建一个新的 Logger 实例
-func New(module string) *slog.Logger {
-	return Get().With("module", module)
+func New(name, value string) *slog.Logger {
+	return Get().With(name, value)
+}
+
+// NewModule 创建一个新的 Logger 实例
+func NewModule(module string) *slog.Logger {
+	return New("module", module)
+}
+
+// NewService 创建一个新的 Logger 实例
+func NewService(service string) *slog.Logger {
+	return New("service", service)
 }

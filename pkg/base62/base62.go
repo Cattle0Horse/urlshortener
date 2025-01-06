@@ -44,7 +44,7 @@ func init() {
 }
 
 // Base62Encode encodes a number to base62
-func Base62Encode(num uint64) []byte {
+func Encode(num uint64) []byte {
 	b := make([]byte, 0, maxBytes)
 
 	for ; num > 0; num /= carry {
@@ -56,7 +56,7 @@ func Base62Encode(num uint64) []byte {
 }
 
 // Base62Decode decodes a base62 encoded string to a number
-func Base62Decode(b []byte) (uint64, error) {
+func Decode(b []byte) (uint64, error) {
 	n := len(b)
 	if n > maxBytes {
 		return 0, ErrBase62Overflow

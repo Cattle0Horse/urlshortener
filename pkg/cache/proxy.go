@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Cattle0Horse/url-shortener/config"
+	"github.com/redis/go-redis/v9"
 )
 
 type proxy struct {
@@ -22,11 +23,11 @@ type proxy struct {
 var _ Interface = (*proxy)(nil)
 
 // NewProxy creates a new cache proxy, which contains a distributed cache and a local cache
-func NewProxy() (Interface, error) {
-	return newProxy()
+func NewProxy(client redis.UniversalClient) (Interface, error) {
+	return newProxy(client)
 }
 
-func newProxy() (*proxy, error) {
+func newProxy(client redis.UniversalClient) (*proxy, error) {
 	c := config.Get().Cache
 	lc, err := NewLocalCache()
 	if err != nil {
@@ -34,7 +35,7 @@ func newProxy() (*proxy, error) {
 	}
 
 	return &proxy{
-		distributedCache: NewRedisRemoteCache(),
+		distributedCache: NewRedisRemoteCache(client),
 		localCache:       lc,
 		remoteCacheTTL:   c.Redis.TTL,
 		localCacheTTL:    c.LocalCache.TTL,

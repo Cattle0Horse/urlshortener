@@ -8,7 +8,6 @@ import (
 	"math/rand/v2"
 	"time"
 
-	redis2 "github.com/Cattle0Horse/url-shortener/internal/global/database/redis"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,13 +19,13 @@ type redisCache struct {
 }
 
 // NewRedisRemoteCache returns a new redis cache
-func NewRedisRemoteCache() Interface {
-	return newRedisCache()
+func NewRedisRemoteCache(client redis.UniversalClient) Interface {
+	return newRedisCache(client)
 }
 
-func newRedisCache() *redisCache {
+func newRedisCache(client redis.UniversalClient) *redisCache {
 	return &redisCache{
-		rdb: redis2.Client(),
+		rdb: client,
 	}
 }
 

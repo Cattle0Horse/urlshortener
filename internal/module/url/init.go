@@ -1,18 +1,33 @@
+// Provide init function and global variables for url module,
+// it will be called by `cmd/server/server.go`
 package url
 
 import (
+	"context"
+	"errors"
 	"log/slog"
+	"time"
 
 	"github.com/Cattle0Horse/url-shortener/config"
+	"github.com/Cattle0Horse/url-shortener/internal/global/constant"
+	"github.com/Cattle0Horse/url-shortener/internal/global/database"
 	"github.com/Cattle0Horse/url-shortener/internal/global/logger"
-	"github.com/Cattle0Horse/url-shortener/internal/global/middleware"
+	"github.com/Cattle0Horse/url-shortener/internal/global/redis"
+	"github.com/Cattle0Horse/url-shortener/pkg/bloomfilter"
+	pkgcache "github.com/Cattle0Horse/url-shortener/pkg/cache"
+	"github.com/Cattle0Horse/url-shortener/pkg/tddl"
+	"github.com/Cattle0Horse/url-shortener/pkg/tools"
 	"github.com/Cattle0Horse/url-shortener/test"
-	"github.com/gin-gonic/gin"
 )
 
 var (
 	log     *slog.Logger
 	baseUrl string
+	tddlGen tddl.TDDL
+	bloom   bloomfilter.Interface
+	cache   pkgcache.Interface
+
+	cacheTTL time.Duration
 )
 
 type ModuleUrl struct{}
@@ -24,34 +39,48 @@ func (p *ModuleUrl) GetName() string {
 func (p *ModuleUrl) Init() {
 	switch test.IsTest() {
 	case false:
-		log = logger.New("Url")
+		log = logger.NewModule("Url")
 	case true:
 		log = logger.Get()
 	}
-	cfg := config.Get().Server
+	sc := config.Get().Server
 	// http协议
-	if cfg.Port == "8080" {
-		baseUrl = "http://" + cfg.Host + cfg.Prefix
+	if sc.Port == "8080" {
+		baseUrl = "http://" + sc.Host + sc.Prefix
 	} else {
-		baseUrl = "http://" + cfg.Host + ":" + cfg.Port + cfg.Prefix
+		baseUrl = "http://" + sc.Host + ":" + sc.Port + sc.Prefix
 	}
-}
 
-func (p *ModuleUrl) RegisterRoutes(router *gin.Engine) {
-	// 应用限流中间件
-	router.Use(middleware.AdaptiveRateLimiter(1000)) // 初始1000 RPS
+	var err error
+	tddlGen, err = tddl.New(database.DB)
+	tools.PanicOnErr(err)
 
-	urlGroup := router.Group("/url")
-	{
-		urlGroup.POST("/shorten", p.shortenUrl)
-		urlGroup.GET("/:code", p.redirectUrl)
+	// 创建布隆过滤器接口
+	uc := config.Get().Url
+	bloom = bloomfilter.NewRedisBloomFilter(
+		redis.Client,
+		constant.ShortCodeBloomFilterCacheKey,
+		uc.BloomFilterSize,
+		uc.BloomFilterFalsePositiveRate,
+	)
+
+	err = bloom.Create(context.Background())
+	if err != nil {
+		if errors.Is(err, bloomfilter.ErrBloomFilterAlreadyExists) {
+			log.Info("bloom filter already exists")
+		} else {
+			panic(err)
+		}
 	}
+
+	cache, err = pkgcache.NewProxy(redis.Client)
+	tools.PanicOnErr(err)
+
+	cacheTTL = config.Get().Cache.Redis.TTL
+
 }
 
-func (p *ModuleUrl) shortenUrl(c *gin.Context) {
-	// 短链生成逻辑
-}
-
-func (p *ModuleUrl) redirectUrl(c *gin.Context) {
-	// 长链重定向逻辑
+func selfInit() {
+	u := &ModuleUrl{}
+	u.Init()
 }

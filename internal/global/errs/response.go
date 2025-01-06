@@ -33,7 +33,7 @@ func Fail(c *gin.Context, err error) {
 	var e *Error
 	ok := errors.As(err, &e)
 	if !ok {
-		e = serverInternal.WithOrigin(err)
+		e = errServerInternal.WithOrigin(err)
 	}
 
 	response.Code = e.Code

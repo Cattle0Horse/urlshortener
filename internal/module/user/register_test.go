@@ -2,10 +2,10 @@ package user
 
 import (
 	"context"
-	"github.com/Cattle0Horse/url-shortener/internal/global/database/mysql"
+	"github.com/Cattle0Horse/url-shortener/internal/global/database"
 	"github.com/Cattle0Horse/url-shortener/internal/global/errs"
+	"github.com/Cattle0Horse/url-shortener/pkg/tools"
 	"github.com/Cattle0Horse/url-shortener/test"
-	"github.com/Cattle0Horse/url-shortener/tools"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -24,7 +24,7 @@ func TestCreate(t *testing.T) {
 		}
 		resp := test.DoRequest(t, Create, req)
 		test.NoError(t, resp)
-		u := mysql.Query.User
+		u := database.Query.User
 		userInfo, err := u.WithContext(ctx).Where(u.Email.Eq(req.Email)).First()
 		require.NoError(t, err)
 		require.Equal(t, true, tools.PasswordCompare(req.Password, userInfo.Password))
@@ -63,7 +63,7 @@ func TestCreate(t *testing.T) {
 				Password: "123456",
 			},
 		}
-		u := mysql.Query.User
+		u := database.Query.User
 		_, err := u.WithContext(ctx).Unscoped().Where(u.Email.Eq(req.Email)).Delete()
 		require.NoError(t, err)
 		resp := test.DoRequest(t, Create, req)

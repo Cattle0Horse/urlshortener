@@ -18,12 +18,12 @@ func Auth() gin.HandlerFunc {
 		}
 		parts := strings.SplitN(authHeader, " ", 2)
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			errs.Fail(c, errs.ErrTokenInvalid)
+			errs.Fail(c, errs.InvaildToken)
 			c.Abort()
 			return
 		}
 		if payload, valid := jwt.ParseToken(parts[1]); !valid {
-			errs.Fail(c, errs.ErrTokenInvalid)
+			errs.Fail(c, errs.InvaildToken)
 			c.Abort()
 			return
 		} else {
