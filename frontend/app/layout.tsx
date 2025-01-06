@@ -1,39 +1,39 @@
-"use client";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Inter } from "next/font/google";
+import MainLayout from "@/components/layout/main-layout";
+import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
-import { AuthProvider } from "@/components/context";
 import { Navbar } from "@/components/nav/navbar";
+import { Toaster } from "sonner";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system">
-          <AuthProvider>
-            <Navbar />
-            {children}
-          </AuthProvider>
-          <Toaster />
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return (
+		<html lang="zh-CN">
+			<body
+				className={cn(
+					"min-h-screen bg-background antialiased",
+					inter.className
+				)}
+			>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<div className="relative flex min-h-screen flex-col">
+						<Navbar />
+						{children}
+					</div>
+					<Toaster richColors closeButton position="top-right" />
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }

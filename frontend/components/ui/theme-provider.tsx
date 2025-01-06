@@ -6,4 +6,4 @@ import type { ThemeProviderProps as NextThemeProviderProps } from "next-themes/d
 
 export function ThemeProvider({ children, ...props }: NextThemeProviderProps) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>
-}
+} 

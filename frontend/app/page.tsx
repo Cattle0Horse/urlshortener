@@ -1,168 +1,154 @@
-"use client";
-
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Copy } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-
-import { toast } from "sonner";
-import { useAuth } from "@/components/context";
-import { useRouter } from "next/navigation";
-
-const formSchema = z.object({
-	originalUrl: z.string().url({
-		message: "请输入一个有效的URL",
-	}),
-	duration: z.string().optional(),
-});
+import { ThemeToggle } from "@/components/theme-toggle"
+import { Link2, BarChart3, Shield, Share2, ShoppingBag, MessageSquare, Presentation } from "lucide-react"
+import Link from "next/link"
 
 export default function Home() {
-	const { token, userID, isAuth } = useAuth();
-	const [shortUrl, setShortUrl] = useState<string>("");
-	const router = useRouter();
-
-	if (!isAuth) {
-		router.push("/auth/login");
-	}
-
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			originalUrl: "",
-		},
-	});
-
-	async function onSubmit(values: z.infer<typeof formSchema>) {
-		try {
-			const response = await fetch("http://localhost:8080/api/url", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-				body: JSON.stringify({
-					original_url: values.originalUrl,
-					duration: values.duration ? Number(values.duration) : undefined,
-					user_id: userID,
-				}),
-			});
-
-			if (!response.ok) {
-				throw new Error("创建失败");
-			}
-
-			const data = await response.json();
-			setShortUrl(data.short_url);
-			toast.success("短链接生成完成");
-		} catch {
-			toast.error("出现错误,请重试");
-		}
-	}
-
 	return (
-		<div className="min-h-screen min-w-full bg-background p-8 flex items-center justify-center">
-			<div className="container max-w-md items-center justify-center mx-auto ">
-				<div className="border-2 px-8 py-4 rounded-lg shadow-lg flex flex-col items-center justify-center">
-					<h1 className="scroll-m-20 text-xl text-center font-extrabold tracking-tight lg:text-3xl mb-8">
-						短链接生成器
-					</h1>
+		<div className="min-h-[calc(100vh-var(--navbar-height))] flex flex-col">
+			<main className="flex-1">
+				{/* Hero Section */}
+				<section className="w-full py-12 md:py-24 lg:py-32">
+					<div className="container flex flex-col items-center justify-center space-y-8 px-4 md:px-6 text-center">
+						{/* 标题区域 */}
+						<div className="flex max-w-[980px] flex-col items-center gap-4">
+							<h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+								更智能的链接管理方式
+							</h1>
+							<p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+								简化您的链接，提升分享体验。快速生成短链接，轻松管理和追踪。
+							</p>
+						</div>
 
-					<Form {...form}>
-						<form
-							onSubmit={form.handleSubmit(onSubmit)}
-							className="space-y-4 w-full"
-						>
-							<FormField
-								control={form.control}
-								name="originalUrl"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>长链接</FormLabel>
-										<FormControl>
-											<Input placeholder="https://example.com" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<div className="flex w-full space-x-10">
-								{/* <FormField
-                  control={form.control}
-                  name="customCode"
-                  render={({ field }) => (
-                    <FormItem className="w-2/3">
-                      <FormLabel>自定义别名(可选)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="custom-code" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        输入一个4-10个字符的自定义别名
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-
-								<FormField
-									control={form.control}
-									name="duration"
-									render={({ field }) => (
-										<FormItem className="w-full">
-											<FormLabel>有效时长(可选)</FormLabel>
-											<FormControl>
-												<Input placeholder="10" type="number" {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
-
-							<div className="flex pt-4">
-								<Button type="submit" className="mx-auto">
-									生成短链接
-								</Button>
-							</div>
-						</form>
-					</Form>
-				</div>
-				{shortUrl && (
-					<div className="mt-8 p-4 border rounded-lg">
-						<h2 className="text-lg font-semibold mb-2">Your Short URL:</h2>
-						<div className="flex items-center gap-2">
-							<a
-								href={shortUrl}
-								target="_blank"
-								className="hover:underline text-sky-600"
+						{/* 按钮区域 */}
+						{/* <div className="flex gap-4">
+							<Link
+								href="/login"
+								className="inline-flex h-10 items-center justify-center rounded-md bg-gradient-to-r from-primary to-secondary px-8 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50"
 							>
-								<h2>{shortUrl}</h2>
-							</a>
+								立即开始
+							</Link>
+							<Link
+								href="/register"
+								className="inline-flex h-10 items-center justify-center rounded-md border border-primary px-8 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+							>
+								了解更多
+							</Link>
+						</div> */}
+					</div>
+				</section>
 
-							<Copy
-								onClick={() => {
-									navigator.clipboard.writeText(shortUrl);
-									toast.success("复制到粘贴板");
-								}}
-								size={15}
-								className="hover:cursor-pointer hover:shadow-lg hover:scale-105"
-							/>
+				{/* Features Section */}
+				<section className="w-full py-12 md:py-24 bg-muted/50">
+					<div className="container px-4 md:px-6">
+						<div className="grid gap-8 md:gap-12 lg:grid-cols-3">
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<Link2 className="h-6 w-6 text-white" />
+								</div>
+								<h2 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									简单快捷
+								</h2>
+								<p className="text-muted-foreground">
+									只需一键即可生成短链接，无需复杂设置。支持自定义链接，让您的链接更具个性。提供批量处理功能，高效处理多个链接。
+								</p>
+							</div>
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<BarChart3 className="h-6 w-6 text-white" />
+								</div>
+								<h2 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									数据分析
+								</h2>
+								<p className="text-muted-foreground">
+									实时追踪链接点击量，了解访问来源。支持地理位置分析、设备统计、访问时段分析，助您做出更明智的决策。
+								</p>
+							</div>
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<Shield className="h-6 w-6 text-white" />
+								</div>
+								<h2 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									安全可靠
+								</h2>
+								<p className="text-muted-foreground">
+									提供链接有效期设置，支持访问密码保护。系统自动检测恶意链接，确保分享安全。多重备份确保数据安全。
+								</p>
+							</div>
 						</div>
 					</div>
-				)}
-			</div>
+				</section>
+
+				{/* Stats Section */}
+				<section className="w-full py-12 md:py-24">
+					<div className="container px-4 md:px-6">
+						<div className="grid gap-8 md:gap-12 lg:grid-cols-4 text-center">
+							<div className="space-y-2">
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">1M+</h3>
+								<p className="text-muted-foreground">活跃用户</p>
+							</div>
+							<div className="space-y-2">
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">100M+</h3>
+								<p className="text-muted-foreground">生成的短链接</p>
+							</div>
+							<div className="space-y-2">
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">99.9%</h3>
+								<p className="text-muted-foreground">服务可用性</p>
+							</div>
+							<div className="space-y-2">
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">24/7</h3>
+								<p className="text-muted-foreground">全天候支持</p>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				{/* Use Cases Section */}
+				<section className="w-full py-12 md:py-24 bg-muted/50">
+					<div className="container px-4 md:px-6">
+						<h2 className="text-3xl font-bold tracking-tight text-center mb-12 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+							适用场景
+						</h2>
+						<div className="grid gap-8 md:gap-12 lg:grid-cols-4">
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<Share2 className="h-6 w-6 text-white" />
+								</div>
+								<h3 className="text-xl font-semibold">社交媒体</h3>
+								<p className="text-muted-foreground">
+									优化社交媒体分享链接，提升用户点击率
+								</p>
+							</div>
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<ShoppingBag className="h-6 w-6 text-white" />
+								</div>
+								<h3 className="text-xl font-semibold">电商营销</h3>
+								<p className="text-muted-foreground">
+									追踪营销活动效果，优化推广策略
+								</p>
+							</div>
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<MessageSquare className="h-6 w-6 text-white" />
+								</div>
+								<h3 className="text-xl font-semibold">即时通讯</h3>
+								<p className="text-muted-foreground">
+									简化长链接分享，提升沟通效率
+								</p>
+							</div>
+							<div className="space-y-4">
+								<div className="inline-block rounded-lg bg-gradient-to-r from-primary to-secondary p-3 shadow-lg">
+									<Presentation className="h-6 w-6 text-white" />
+								</div>
+								<h3 className="text-xl font-semibold">数据分析</h3>
+								<p className="text-muted-foreground">
+									深入了解用户行为，优化业务决策
+								</p>
+							</div>
+						</div>
+					</div>
+				</section>
+			</main>
 		</div>
-	);
+	)
 }
