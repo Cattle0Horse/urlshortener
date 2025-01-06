@@ -21,7 +21,7 @@ func Redirect(c *gin.Context) {
 	}
 
 	// 预检测，合法性与布隆过滤器
-	exists, err := CheckCode(c.Request.Context(), []byte(shortCode))
+	exists, err := PreCheckCode(c.Request.Context(), []byte(shortCode))
 	if err != nil {
 		log.Error("Failed to check bloom filter", "error", err)
 		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))

@@ -2,6 +2,7 @@ package module
 
 import (
 	"github.com/Cattle0Horse/url-shortener/internal/module/ping"
+	"github.com/Cattle0Horse/url-shortener/internal/module/url"
 	"github.com/Cattle0Horse/url-shortener/internal/module/user"
 	"github.com/gin-gonic/gin"
 )
@@ -23,5 +24,6 @@ func init() {
 	registerModule([]Module{
 		&user.ModuleUser{},
 		&ping.ModulePing{},
+		&url.ModuleUrl{},
 	})
 }

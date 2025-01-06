@@ -17,26 +17,29 @@ import (
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:   db,
-		Url:  newUrl(db, opts...),
-		User: newUser(db, opts...),
+		db:       db,
+		Sequence: newSequence(db, opts...),
+		Url:      newUrl(db, opts...),
+		User:     newUser(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Url  url
-	User user
+	Sequence sequence
+	Url      url
+	User     user
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		Url:  q.Url.clone(db),
-		User: q.User.clone(db),
+		db:       db,
+		Sequence: q.Sequence.clone(db),
+		Url:      q.Url.clone(db),
+		User:     q.User.clone(db),
 	}
 }
 
@@ -50,21 +53,24 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		Url:  q.Url.replaceDB(db),
-		User: q.User.replaceDB(db),
+		db:       db,
+		Sequence: q.Sequence.replaceDB(db),
+		Url:      q.Url.replaceDB(db),
+		User:     q.User.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Url  *urlDo
-	User *userDo
+	Sequence *sequenceDo
+	Url      *urlDo
+	User     *userDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Url:  q.Url.WithContext(ctx),
-		User: q.User.WithContext(ctx),
+		Sequence: q.Sequence.WithContext(ctx),
+		Url:      q.Url.WithContext(ctx),
+		User:     q.User.WithContext(ctx),
 	}
 }
 

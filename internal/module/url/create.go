@@ -47,7 +47,7 @@ func Create(c *gin.Context) {
 		errs.Fail(c, errs.InvaildToken.WithOrigin(errors.New("payload not found")))
 		return
 	}
-	req.UserID = payload.(jwt.Claims).UserId
+	req.UserID = payload.(*jwt.Claims).UserId
 
 	var url model.Url
 	req.ConvertToUrl(&url)

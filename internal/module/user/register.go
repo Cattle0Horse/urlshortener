@@ -13,6 +13,8 @@ type CreateRequest struct {
 	User
 }
 
+// fixme: 邮箱已存在检测失败
+
 func Create(c *gin.Context) {
 	var req CreateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

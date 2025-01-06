@@ -42,7 +42,7 @@ func newUrl(db *gorm.DB, opts ...gen.DOOption) url {
 }
 
 type url struct {
-	urlDo urlDo
+	urlDo
 
 	ALL         field.Asterisk
 	ID          field.Uint
@@ -82,14 +82,6 @@ func (u *url) updateTableName(table string) *url {
 
 	return u
 }
-
-func (u *url) WithContext(ctx context.Context) *urlDo { return u.urlDo.WithContext(ctx) }
-
-func (u url) TableName() string { return u.urlDo.TableName() }
-
-func (u url) Alias() string { return u.urlDo.Alias() }
-
-func (u url) Columns(cols ...field.Expr) gen.Columns { return u.urlDo.Columns(cols...) }
 
 func (u *url) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 	_f, ok := u.fieldMap[fieldName]

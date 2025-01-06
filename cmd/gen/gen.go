@@ -15,6 +15,7 @@ func main() {
 	g.ApplyBasic(
 		model.User{},
 		model.Url{},
+        model.Sequence{},
 	)
 
 	g.Execute()

@@ -46,7 +46,7 @@ type Sequence struct {
 
 // TableName returns the table name of the Sequence model
 func (Sequence) TableName() string {
-	return "sequences"
+	return "sequence"
 }
 
 type tddlSequence struct {

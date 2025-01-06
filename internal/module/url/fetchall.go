@@ -10,16 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type FeechAllRequest struct {
-	page int `uri:"page" binding:"min=1"`
-	size int `uri:"size" binding:"min=1"`
+type FetchAllRequest struct {
+	Page int `form:"page" binding:"required,min=1"`
+	Size int `form:"size" binding:"required,min=1,max=100"`
 }
 
 type FetchAllResponse struct {
-	Urls []Url `json:"urls"`
+	Total int64 `json:"total"`
+	Urls  []Url `json:"urls"`
 }
 
-func (resp *FetchAllResponse) ConvertFromModel(urls []*model.Url) {
+func (resp *FetchAllResponse) ConvertFromModel(urls []*model.Url, total int64) {
+	resp.Total = total
 	resp.Urls = make([]Url, len(urls))
 	for i, url := range urls {
 		resp.Urls[i].ConvertFromModel(url)
@@ -32,24 +34,24 @@ func FetchAll(c *gin.Context) {
 		errs.Fail(c, errs.InvaildToken.WithOrigin(errors.New("payload not found")))
 		return
 	}
-	userID := payload.(jwt.Claims).UserId
+	userID := payload.(*jwt.Claims).UserId
 
-	var req FeechAllRequest
-	if err := c.ShouldBindUri(&req); err != nil {
-		errs.Fail(c, errs.InvalidPathParams.WithOrigin(err))
+	var req FetchAllRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		errs.Fail(c, errs.InvalidRequest.WithOrigin(err))
 		return
 	}
 
 	u := database.Query.Url
 	// 获取用户的所有短链接
-	urls, _, err := u.WithContext(c.Request.Context()).Where(u.UserID.Eq(userID)).FindByPage((req.page-1)*req.size, req.size)
+	urls, total, err := u.WithContext(c.Request.Context()).Where(u.UserID.Eq(userID)).FindByPage((req.Page-1)*req.Size, req.Size)
 	if err != nil {
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
 		return
 	}
 
 	resp := &FetchAllResponse{}
-	resp.ConvertFromModel(urls)
+	resp.ConvertFromModel(urls, total)
 
 	errs.Success(c, resp)
 }

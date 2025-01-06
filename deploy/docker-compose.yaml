@@ -5,9 +5,16 @@ networks:
     driver: bridge
 
 services:
-  app:
-    image: cattlehorse/url-shortener:latest
-    container_name: url-shortener-app
+  urlshortener:
+    image: cattlehorse/urlshortener:latest
+    hostname: urlshortener
+    container_name: urlshortener
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     volumes:
       - ./config.yaml:/app/config.yaml
     ports:
@@ -15,16 +22,41 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    restart: always
+      redis:
+        condition: service_healthy
     networks:
-      - url-shortener-net
+      - urlshortener-net
+
+# todo: urlshortener-readonly
+#   urlshortener-ro:
+#     image: cattlehorse/urlshortener:latest
+#     hostname: urlshortener-ro
+#     container_name: urlshortener-ro
+#     deploy:
+#       restart_policy:
+#         condition: on-failure
+#         delay: 5s
+#         max_attempts: 3
+#         window: 120s
+#     command: "-f /app/config.yaml --readonly"
+#     volumes:
+#       - ./config.yaml:/app/config.yaml
+#     ports:
+#       - "80:8080"
+#     depends_on:
+#       mysql:
+#         condition: service_healthy
+#       redis:
+#         condition: service_healthy
 
   mysql:
-    image: mysql:8.0
-    container_name: url-shortener-mysql
+    image: mysql:latest
+    container_name: urlshortener_mysql
+    ports:
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 12345678
-      MYSQL_DATABASE: url-shortener
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: urlshortener
       TZ: Asia/Shanghai
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
@@ -35,4 +67,22 @@ services:
     privileged: true
     restart: always
     networks:
-      - url-shortener-net
+      - urlshortener-net
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: urlshortener_redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server" , "--protected-mode", "no"]
+    environment:
+      - REDIS_ARGS="--save 10 1 --appendonly yes"
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - urlshortener-net

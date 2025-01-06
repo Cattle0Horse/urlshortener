@@ -2,24 +2,40 @@
 
 def launch_mysql [] {
     (
-        docker run -d	
+        docker run
+            -d	
             --name urlshortener_mysql
             -p 3306:3306
             -e MYSQL_ROOT_PASSWORD=123456
             -e MYSQL_DATABASE=urlshortener
-            -e MYSQL_USER=urlshortener
-            -e MYSQL_PASSWORD=123456
             mysql:latest
     )
 }
 
 def launch_redis [] {
     (
-        docker run -d
+        docker run
+            -d
             --name urlshortener_redis
             -p 6379:6379
-            redis:latest
+            redis/redis-stack-server:latest
     )
+}
+
+def gen [] {
+    go run cmd/gen/gen.go
+}
+
+def run [] {
+    go run main.go
+}
+
+def enter_mysql [] {
+    docker exec -it urlshortener_mysql mysql -u root -p
+}
+
+def enter_redis [] {
+    docker exec -it urlshortener_redis /bin/sh
 }
 
 def gen_config_struct_tag [] {

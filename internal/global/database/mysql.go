@@ -47,6 +47,6 @@ func Init() {
 	sqlDB.SetConnMaxIdleTime(time.Minute)
 
 	// tools.PanicOnErr(db.Use(otel.GetGormPlugin()))
-	tools.PanicOnErr(DB.AutoMigrate(model.User{}, model.Url{}))
+	tools.PanicOnErr(DB.AutoMigrate(model.User{}, model.Url{}, model.Sequence{}))
 	Query = query.Use(DB)
 }

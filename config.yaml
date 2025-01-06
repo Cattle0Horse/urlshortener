@@ -1,6 +1,6 @@
 server:
     Host: "0.0.0.0"
-    Port: "9090"
+    Port: "8080"
     Prefix: ""
     Mode: "debug"
     readonly: false
@@ -15,8 +15,8 @@ mysql:
     host: "127.0.0.1"
     port: "3306"
     username: "root"
-    password: "12345678"
-    db_name: "url-shortener"
+    password: "123456"
+    db_name: "urlshortener"
     max_conn: 25
 
 jwt:
@@ -31,11 +31,11 @@ url:
 tddl:
     start_num: 700000000
     step: 1000
-    seq_name: "turl"
+    seq_name: "urlshortener"
 
 cache:
     redis:
-        addrs: ["redis:6379"]
+        addrs: ["0.0.0.0:6379"]
         dial_timeout: "5s"
         max_conn: 25
         ttl: 1800s

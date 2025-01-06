@@ -1,0 +1,7 @@
+build
+test
+.github
+.idea
+.vscode
+frontend
+scripts

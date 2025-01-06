@@ -1,0 +1,61 @@
+@hostname = http://localhost
+@port = 9090
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzYyMjM4OTIsImlhdCI6MTczNjEzNzQ5Mn0.KJj-4s0iMZN2K3BkwP-yq0hSSJ3KJSuiYu5iw-TTQ-Q
+@authorization = Bearer {{token}}
+@email = cattle_horse@163.com
+@password = Abc123456
+@shortCode = Ln9Nuxx
+
+### 健康检查
+GET {{host}}/ping HTTP/1.1
+
+### 用户注册
+POST {{host}}/api/auth/register HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### 用户登录
+POST {{host}}/api/auth/login HTTP/1.1
+Content-Type: {{contentType}}
+
+{
+    "email": "{{email}}",
+    "password": "{{password}}"
+}
+
+### 创建短链接
+POST {{host}}/api/url HTTP/1.1
+Authorization: {{authorization}}
+Content-Type: {{contentType}}
+
+{
+    "original_url": "https://www.google.com/search?q=recursion",
+    "duration": 24
+}
+
+### 获取用户所有短链接
+GET {{host}}/api/urls?page=1&size=10 HTTP/1.1
+Authorization: {{authorization}}
+
+### 更新短链接过期时间
+PATCH {{host}}/api/url/{{shortCode}} HTTP/1.1
+Authorization: {{authorization}}
+Content-Type: {{contentType}}
+
+{
+    "duration": 48
+}
+
+### 删除短链接
+DELETE {{host}}/api/url/{{shortCode}} HTTP/1.1
+Authorization: {{authorization}}
+
+### 重定向短链接
+GET {{host}}/{{shortCode}} HTTP/1.1
+

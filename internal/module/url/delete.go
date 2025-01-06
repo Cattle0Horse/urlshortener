@@ -23,10 +23,10 @@ func Delete(c *gin.Context) {
 		errs.Fail(c, errs.InvaildToken.WithOrigin(errors.New("payload not found")))
 		return
 	}
-	userID := payload.(jwt.Claims).UserId
+	userID := payload.(*jwt.Claims).UserId
 
 	// 预检测，合法性与布隆过滤器
-	exists, err := CheckCode(c.Request.Context(), []byte(shortCode))
+	exists, err := PreCheckCode(c.Request.Context(), []byte(shortCode))
 	if err != nil {
 		log.Error("Failed to check bloom filter", "error", err)
 		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
