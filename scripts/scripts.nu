@@ -12,6 +12,10 @@ def launch_mysql [] {
     )
 }
 
+def start_mysql [] {
+    docker start urlshortener_mysql
+}
+
 def launch_redis [] {
     (
         docker run
@@ -20,6 +24,10 @@ def launch_redis [] {
             -p 6379:6379
             redis/redis-stack-server:latest
     )
+}
+
+def start_redis [] {
+    docker start urlshortener_redis
 }
 
 def gen [] {
@@ -36,6 +44,10 @@ def enter_mysql [] {
 
 def enter_redis [] {
     docker exec -it urlshortener_redis /bin/sh
+}
+
+def run_env [] {
+    docker compose -f docker-compose.env.yaml up
 }
 
 def gen_config_struct_tag [] {
