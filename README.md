@@ -1,6 +1,9 @@
+# URLify
+
 ## TODO
 
 - [x] 添加布隆过滤器减少缓存击穿情况的发生
+- [ ] 链接访问统计
 - [ ] Docker 部署
 - [ ] 优化连接关闭（返回 clean 接口，类似于 `contextWithCancel`，可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
 - [ ] 可观测性监控
@@ -20,13 +23,6 @@
 - [ ] 过期短链的处理（如轮询扫描全表，删除过期的） - 是否需要处理？
 
 ## 目录设计说明
-
-`pkg/tools`:
-`config`: 配置文件，初始化最高优先级
-`cmd/gen`: `gorm` 代码生成
-`cmd/server`: 服务启动
-`internal/global`: 提供全局可访问的，大多依赖 `config` 和 `pkg` 包
-`internal/`
 
 ```text
 ├── cmd

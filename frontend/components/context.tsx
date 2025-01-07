@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, use } from "react";
-import { isTokenExpired } from "./token";
+import { isTokenExpired } from "@/lib/token";
 import useLocalStorage from "@/hooks/use-localstorage";
 
 type AuthProviderProps = {
@@ -44,7 +44,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     },
   };
 
-  return <AuthProviderContext value={value}>{children}</AuthProviderContext>;
+  return (
+    <AuthProviderContext.Provider value={value}>
+      {children}
+    </AuthProviderContext.Provider>
+  );
 }
 
 export const useAuth = () => {

@@ -38,6 +38,7 @@ func FetchAll(c *gin.Context) {
 
 	var req FetchAllRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
+		log.Info("fetch all url", "err", err)
 		errs.Fail(c, errs.InvalidRequest.WithOrigin(err))
 		return
 	}
@@ -46,6 +47,7 @@ func FetchAll(c *gin.Context) {
 	// 获取用户的所有短链接
 	urls, total, err := u.WithContext(c.Request.Context()).Where(u.UserID.Eq(userID)).FindByPage((req.Page-1)*req.Size, req.Size)
 	if err != nil {
+		log.Info("fetch all url", "err", err)
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
 		return
 	}

@@ -10,8 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
+type LoginRequst struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8,max=20"`
+}
+type LoginResponse struct {
+	Token  string `json:"token"`
+	UserID uint   `json:"user_id"`
+}
+
 func Login(c *gin.Context) {
-	var req User
+	var req LoginRequst
 	if err := c.BindJSON(&req); err != nil {
 		errs.Fail(c, errs.InvalidRequest.WithTips(err.Error()))
 		return
@@ -35,5 +44,32 @@ func Login(c *gin.Context) {
 		errs.Fail(c, errs.FailedCreateToken.WithOrigin(err))
 		return
 	}
-	errs.Success(c, map[string]string{"token": token})
+	errs.Success(c, LoginResponse{
+		Token:  token,
+		UserID: userInfo.ID,
+	})
 }
+
+type MeResponse struct {
+	ID    uint   `json:"id"`
+	Email string `json:"email"`
+}
+
+// TODO: token缓存
+// func Me(c *gin.Context) {
+// 	payload, ok := c.Get("payload")
+// 	if !ok {
+// 		errs.Fail(c, errs.InvaildToken.WithOrigin(errors.New("payload not found")))
+// 		return
+// 	}
+// 	userId := payload.(*jwt.Claims).UserId
+
+// 	u := database.Query.User
+// 	userInfo, err := u.WithContext(c.Request.Context()).Where(u.ID.Eq(userId)).First()
+// 	if err != nil {
+// 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
+// 		return
+// 	}
+
+// 	errs.Success(c)
+// }

@@ -10,6 +10,7 @@ import (
 )
 
 type Url struct {
+	ID          uint      `json:"id"`
 	ShortCode   string    `json:"short_code"`
 	OriginalUrl string    `json:"original_url"`
 	ExpiryTime  time.Time `json:"expiry_time"`
@@ -17,6 +18,7 @@ type Url struct {
 }
 
 func (u *Url) ConvertFromModel(url *model.Url) {
+	u.ID = url.ID
 	u.ShortCode = url.ShortCode
 	u.OriginalUrl = url.OriginalUrl
 	u.ExpiryTime = url.ExpiryTime

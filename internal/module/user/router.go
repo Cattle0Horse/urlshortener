@@ -8,5 +8,6 @@ func (u *ModuleUser) InitRouter(r *gin.RouterGroup) {
 
 	r.POST("/api/auth/login", Login).
 		POST("/api/auth/register", Create)
+	// GET("/api/auth/me", Me)
 
 }

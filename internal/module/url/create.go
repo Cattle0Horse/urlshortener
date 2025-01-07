@@ -14,8 +14,8 @@ import (
 )
 
 type CreateRequest struct {
-	OriginalUrl string `json:"original_url" binding:"required,url"`
-	Duration    *int   `json:"duration" binding:"omitempty,min=1,max=100"`
+	OriginalUrl string `json:"original_url" binding:"required,url,min=10,max=255"`
+	Duration    *int   `json:"duration" binding:"omitempty,min=1,max=168"`
 	UserID      uint   `json:"user_id" binding:"-"`
 }
 
@@ -30,7 +30,7 @@ func (r *CreateRequest) ConvertToUrl(url *model.Url) {
 }
 
 type CreateResponse struct {
-	ShortUrl string `json:"short_url"`
+	ShortCode string `json:"short_code"`
 }
 
 func Create(c *gin.Context) {
@@ -86,6 +86,6 @@ func Create(c *gin.Context) {
 	}
 
 	errs.Success(c, CreateResponse{
-		ShortUrl: baseUrl + "/" + url.ShortCode,
+		ShortCode: url.ShortCode,
 	})
 }
