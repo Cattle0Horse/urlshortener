@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Icons } from "@/components/ui/icons"
+import { Loader2 } from "lucide-react"
 import { api } from "@/lib/api"
 
 const formSchema = z.object({
@@ -142,7 +142,7 @@ export default function RegisterForm() {
           disabled={isLoading}
         >
           {isLoading && (
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}
           注册
         </Button>

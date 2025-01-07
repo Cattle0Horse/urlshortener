@@ -14,8 +14,17 @@ export function formatDate(input: string | number): string {
   })
 }
 
-export function absoluteUrl(path: string) {
-  return `${process.env.NEXT_PUBLIC_APP_URL}${path}`
+export function formatDateTime(input: string | number): string {
+  const date = new Date(input)
+  return date.toLocaleString("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+  })
 }
 
 // 将时间戳格式化为相对时间
@@ -42,20 +51,6 @@ export function timeAgo(timestamp: number): string {
   return '刚刚'
 }
 
-// 生成随机颜色
-export function generateRandomColor(): string {
-  const colors = [
-    'bg-red-500',
-    'bg-yellow-500',
-    'bg-green-500',
-    'bg-blue-500',
-    'bg-indigo-500',
-    'bg-purple-500',
-    'bg-pink-500'
-  ]
-  return colors[Math.floor(Math.random() * colors.length)]
-}
-
 // 复制文本到剪贴板
 export async function copyToClipboard(text: string): Promise<boolean> {
   try {
@@ -63,16 +58,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     return true
   } catch (err) {
     console.error('Failed to copy text: ', err)
-    return false
-  }
-}
-
-// 验证URL格式
-export function isValidUrl(url: string) {
-  try {
-    new URL(url)
-    return true
-  } catch (err) {
     return false
   }
 }
@@ -86,4 +71,13 @@ export function formatNumber(num: number): string {
     return (num / 1000).toFixed(1) + 'K'
   }
   return num.toString()
+}
+
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch (_) {
+    return false
+  }
 }

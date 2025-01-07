@@ -16,16 +16,18 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Icons } from "@/components/ui/icons"
+import { Loader2 } from "lucide-react"
 import { loginSchema } from "@/lib/validations/auth"
 import { api } from "@/lib/api"
 import { setCookie } from "@/lib/cookies"
+
+type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState<boolean>(false)
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -33,33 +35,38 @@ export function LoginForm() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setIsLoading(true)
-
+  async function onSubmit(values: LoginFormData) {
     try {
-      const data = await api.auth.login(values.email, values.password)
+      setIsLoading(true)
+      const response = await api.auth.login(values.email, values.password)
       
-      // 存储 token 和用户信息
-      setCookie('token', data.access_token)
-      setCookie('email', values.email)
-      setCookie('user_id', String(data.user_id))
+      // 存储 token、用户信息和 email
+      setCookie('token', response.token, { expires: 7 }) // 7天有效期
+      setCookie('user_id', String(response.user_id), { expires: 7 })
+      setCookie('email', values.email, { expires: 7 })
 
-      // 显示成功消息
-      toast.success("登录成功", {
-        description: "欢迎回来！正在跳转到仪表板...",
-        duration: 2000,  // 显示2秒
+      // 显示成功消息并跳转
+      toast.success('登录成功', {
+        description: '欢迎回来！即将跳转到仪表盘...'
       })
-      
-      // 延迟跳转以显示成功消息
+
+      // 延迟跳转以确保用户看到提示
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push('/dashboard')
         router.refresh()
       }, 1000)
     } catch (error) {
+      console.error('Login failed:', error)
       // 显示错误消息
-      toast.error("登录失败", {
-        description: "邮箱或密码错误，请重试",
-      })
+      if (error instanceof Error) {
+        toast.error('登录失败', {
+          description: error.message
+        })
+      } else {
+        toast.error('登录失败', {
+          description: '邮箱或密码错误'
+        })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -67,7 +74,7 @@ export function LoginForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="email"
@@ -77,10 +84,8 @@ export function LoginForm() {
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="hello@example.com"
-                  autoComplete="email"
+                  placeholder="example@example.com"
                   {...field}
-                  disabled={isLoading}
                 />
               </FormControl>
               <FormMessage />
@@ -94,27 +99,21 @@ export function LoginForm() {
             <FormItem>
               <FormLabel>密码</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  placeholder="输入您的密码"
-                  autoComplete="current-password"
-                  {...field}
-                  disabled={isLoading}
-                />
+                <Input type="password" placeholder="••••••••" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button 
-          className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white" 
-          type="submit" 
-          disabled={isLoading}
-        >
-          {isLoading && (
-            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              登录中...
+            </>
+          ) : (
+            "登录"
           )}
-          登录
         </Button>
       </form>
     </Form>

@@ -33,7 +33,8 @@ var (
 	InvaildToken       = newError(40005, "无效的token")
 	InvalidPathParams  = newError(40007, "无效的路径参数")
 	EmptyAuthorization = newError(40006, "Authorization请求头为空")
-	Forbidden          = newError(40007, "禁止访问")
+	UnAuthorization    = newError(40007, "Unauthorized")
+	Forbidden          = newError(40008, "禁止访问")
 )
 
 // 500 INTERNAL ERROR

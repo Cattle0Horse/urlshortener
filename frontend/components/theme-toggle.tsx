@@ -7,6 +7,24 @@ import { Button } from "@/components/ui/button"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  // Handle mounting on client side
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // 防止初始化时的水合不匹配
+  React.useEffect(() => {
+    if (mounted) {
+      document.body.style.setProperty('--initial-color-scheme', theme || 'light')
+    }
+  }, [mounted, theme])
+
+  // 在主题未加载完成前不渲染按钮
+  if (!mounted) {
+    return null
+  }
 
   return (
     <Button
@@ -19,4 +37,4 @@ export function ThemeToggle() {
       <span className="sr-only">切换主题</span>
     </Button>
   )
-} 
+}

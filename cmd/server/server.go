@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/Cattle0Horse/url-shortener/config"
 	"github.com/Cattle0Horse/url-shortener/internal/global/database"
@@ -46,7 +47,14 @@ func Run() {
 	}
 
 	// 跨域
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	r.Use(middleware.Recovery())
 
 	for _, m := range module.Modules {

@@ -84,18 +84,6 @@
   }
 }
 
-.glass-effect {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.dark .glass-effect {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
 @keyframes blob {
   0% {
     transform: translate(0px, 0px) scale(1);
@@ -112,7 +100,7 @@
 }
 
 .animate-blob {
-  animation: blob 7s infinite;
+  @apply animate-[blob_7s_infinite];
 }
 
 .animation-delay-2000 {

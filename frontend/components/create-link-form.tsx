@@ -10,35 +10,31 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Icons } from "@/components/ui/icons"
+import { Slider } from "@/components/ui/slider"
+import { Loader2, Clock, ExternalLink, LayoutDashboard } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import { isValidUrl } from "@/lib/utils"
 import { api } from "@/lib/api"
 import { getCookie } from "@/lib/cookies"
 
 const formSchema = z.object({
-  url: z.string().url({
-    message: "请输入有效的URL地址",
-  }),
-  customSlug: z
-    .string()
-    .min(3, {
-      message: "自定义短链至少需要3个字符",
+  url: z.string()
+    .url({
+      message: "请输入有效的URL地址",
     })
-    .max(20, {
-      message: "自定义短链不能超过20个字符",
-    })
-    .regex(/^[a-zA-Z0-9-_]+$/, {
-      message: "只能使用字母、数字、横线和下划线",
-    })
-    .optional(),
+    .max(255, {
+      message: "URL长度不能超过255个字符"
+    }),
+  duration: z.number()
+    .min(1, { message: "到期时长最少1小时" })
+    .max(168, { message: "到期时长最多168小时" })
+    .default(24),
 })
 
 export function CreateLinkForm() {
@@ -50,23 +46,54 @@ export function CreateLinkForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       url: "",
-      customSlug: "",
+      duration: 24,
     },
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-
     try {
+      setIsLoading(true)
       const token = getCookie('token')
-      const data = await api.links.create({
+      if (!token) {
+        toast.error('登录已过期', {
+          description: '请重新登录后再试'
+        })
+        router.push('/login')
+        return
+      }
+
+      const response = await api.links.create({
         url: values.url,
-        customSlug: values.customSlug,
+        duration: values.duration,
       }, token)
-      setShortUrl(data.shortUrl)
-      toast.success('创建成功')
+      
+      const newShortUrl = `${window.location.origin}/${response.short_code}`
+      setShortUrl(newShortUrl)
+      
+      toast.success('短链接创建成功！', {
+        description: newShortUrl,
+        action: {
+          label: '前往仪表盘',
+          onClick: () => router.push('/dashboard')
+        }
+      })
+
+      // 重置表单
+      form.reset({
+        url: "",
+        duration: 24,
+      })
     } catch (error) {
-      toast.error('创建失败，请稍后重试')
+      console.error('Failed to create link:', error)
+      if (error instanceof Error) {
+        toast.error('创建失败', {
+          description: error.message
+        })
+      } else {
+        toast.error('创建失败', {
+          description: '请稍后重试'
+        })
+      }
     } finally {
       setIsLoading(false)
     }
@@ -75,9 +102,18 @@ export function CreateLinkForm() {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(shortUrl)
-      toast.success("已复制到剪贴板")
+      toast.success('已复制到剪贴板', {
+        description: shortUrl,
+        action: {
+          label: '访问链接',
+          onClick: () => window.open(shortUrl, '_blank', 'noopener,noreferrer')
+        }
+      })
     } catch (err) {
-      toast.error("复制失败，请手动复制")
+      console.error('Failed to copy:', err)
+      toast.error('复制失败', {
+        description: '请手动复制以下链接：' + shortUrl
+      })
     }
   }
 
@@ -92,11 +128,21 @@ export function CreateLinkForm() {
               <FormItem>
                 <FormLabel>原始链接</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="https://example.com/very-long-url"
-                    {...field}
-                    disabled={isLoading}
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="https://example.com/very-long-url"
+                      className="pr-4 transition-all duration-200 border-input focus:border-primary"
+                      {...field}
+                      disabled={isLoading}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className={`h-2 w-2 rounded-full transition-colors ${
+                        field.value && !form.formState.errors.url
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`} />
+                    </div>
+                  </div>
                 </FormControl>
                 <FormDescription>
                   输入您想要缩短的完整URL地址
@@ -107,27 +153,44 @@ export function CreateLinkForm() {
           />
           <FormField
             control={form.control}
-            name="customSlug"
+            name="duration"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>自定义短链（可选）</FormLabel>
+              <FormItem className="space-y-4">
+                <FormLabel className="flex items-center gap-2 text-base">
+                  <Clock className="h-4 w-4" />
+                  <span>到期时长</span>
+                </FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="my-custom-url"
-                    {...field}
-                    disabled={isLoading}
-                  />
+                  <div className="px-1 space-y-4">
+                    <Slider
+                      min={1}
+                      max={168}
+                      step={1}
+                      value={[field.value]}
+                      onValueChange={([value]) => field.onChange(value)}
+                      disabled={isLoading}
+                    />
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">1小时</span>
+                      <span className="font-medium text-base text-primary">{field.value}小时</span>
+                      <span className="text-muted-foreground">168小时</span>
+                    </div>
+                  </div>
                 </FormControl>
-                <FormDescription>
-                  自定义您的短链接后缀，如果不填写将自动生成
+                <FormDescription className="text-xs text-muted-foreground">
+                  设置短链接的有效期，默认24小时（1周 = 168小时）
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-primary to-secondary text-white"
+          >
             {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
             创建短链接
           </Button>
@@ -136,21 +199,36 @@ export function CreateLinkForm() {
 
       {shortUrl && (
         <Card className="p-6">
-          <div className="flex items-center justify-between space-x-4">
-            <div className="space-y-1">
-              <h3 className="font-semibold">您的短链接已生成</h3>
-              <p className="text-sm text-muted-foreground break-all">
-                {shortUrl}
-              </p>
+          <h3 className="text-lg font-semibold mb-4">创建成功！</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">短链接：</span>
+              <span className="text-sm font-medium">{shortUrl}</span>
             </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={copyToClipboard}
-              className="shrink-0"
-            >
-              复制链接
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={copyToClipboard}
+              >
+                复制链接
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => window.open(shortUrl, '_blank')}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                访问链接
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => router.push('/dashboard')}
+              >
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                前往仪表盘
+              </Button>
+            </div>
           </div>
         </Card>
       )}

@@ -1,6 +1,4 @@
-import { ThemeToggle } from "@/components/theme-toggle"
 import { Link2, BarChart3, Shield, Share2, ShoppingBag, MessageSquare, Presentation } from "lucide-react"
-import Link from "next/link"
 
 export default function Home() {
 	return (
@@ -19,21 +17,6 @@ export default function Home() {
 							</p>
 						</div>
 
-						{/* 按钮区域 */}
-						{/* <div className="flex gap-4">
-							<Link
-								href="/login"
-								className="inline-flex h-10 items-center justify-center rounded-md bg-gradient-to-r from-primary to-secondary px-8 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:pointer-events-none disabled:opacity-50"
-							>
-								立即开始
-							</Link>
-							<Link
-								href="/register"
-								className="inline-flex h-10 items-center justify-center rounded-md border border-primary px-8 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-							>
-								了解更多
-							</Link>
-						</div> */}
 					</div>
 				</section>
 

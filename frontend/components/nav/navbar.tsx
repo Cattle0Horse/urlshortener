@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { Moon, Sun, Link as LinkIcon, User, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getCookie, removeCookie } from '@/lib/cookies'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { toast } from "sonner"
 import {
   DropdownMenu,
@@ -19,6 +19,7 @@ import {
 export function Navbar() {
   const { theme, setTheme } = useTheme()
   const router = useRouter()
+  const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState("")
@@ -27,11 +28,21 @@ export function Navbar() {
     setMounted(true)
   }, [])
 
-  useEffect(() => {
+  const checkAuth = () => {
     const token = getCookie('token')
     const email = getCookie('email')
     setIsLoggedIn(!!token)
     setUserEmail(email || "")
+  }
+
+  useEffect(() => {
+    checkAuth()
+  }, [pathname])
+
+  // 每秒检查一次登录状态
+  useEffect(() => {
+    const interval = setInterval(checkAuth, 1000)
+    return () => clearInterval(interval)
   }, [])
 
   if (!mounted) {

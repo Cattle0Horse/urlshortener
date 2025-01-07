@@ -91,6 +91,9 @@ export function CreateLinkDialog({
     }
   }
 
+  const urlValue = watch('url')
+  const isValid = urlValue ? isValidUrl(urlValue) : false
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
@@ -103,11 +106,20 @@ export function CreateLinkDialog({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Input
-              {...register('url')}
-              placeholder="请输入URL地址"
-              className={errors.url ? 'border-red-500' : ''}
-            />
+            <div className="relative">
+              <Input
+                {...register('url')}
+                placeholder="请输入URL地址"
+                className={errors.url ? 'border-red-500' : ''}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className={`h-2 w-2 rounded-full transition-colors ${
+                  urlValue 
+                    ? (isValid ? "bg-green-500" : "bg-red-500")
+                    : "bg-gray-300"
+                }`} />
+              </div>
+            </div>
             {errors.url && (
               <p className="text-sm text-red-500">{errors.url.message}</p>
             )}
@@ -180,4 +192,4 @@ export function CreateLinkDialog({
       </DialogContent>
     </Dialog>
   )
-} 
+}
