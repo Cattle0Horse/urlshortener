@@ -2,6 +2,7 @@
 
 ## TODO
 
+- [x] 过期处理（redis中可以存储过期时间，或者redis中设置到期时间少于数据库过期时间） - 缓存数据库一致性
 - [x] 添加布隆过滤器减少缓存击穿情况的发生
 - [ ] 链接访问统计
 - [ ] Docker 部署
@@ -11,23 +12,22 @@
 - [ ] DbProxy 数据库集群
 - [ ] 读写分离（参考 [beihai0xff/turl](https://github.com/beihai0xff/turl) ）
 - [ ] token 缓存
-- [ ] 过期处理（redis中可以存储过期时间，或者redis中设置到期时间少于数据库过期时间） - 缓存数据库一致性
 - [ ] log 打印（参考 `internal/module/user/register.go`）
-- [ ] 数据库存储可以考虑换成 base62编码 前的数字，这保证了有序性，数据库查询更优秀（不过这导致旧键无法复用，本来也不使用）
+- [ ] 数据库存储可以考虑换成 base62编码 前的数字，这保证了有序性，数据库查询效率更优秀（不过这导致旧键无法复用，本来也不使用）
 - [ ] 服务限流
 - [ ] 容器化健康检查
 
-考虑项：
+待考虑项：
 
-- [ ] 相同 url 可以幂等，思考是否需要幂等？
-- [ ] 过期短链的处理（如轮询扫描全表，删除过期的） - 是否需要处理？
+- [ ] 相同 url 可以幂等
+- [ ] 过期短链的处理（如轮询扫描全表，删除过期的）
 
 ## 目录设计说明
 
 ```text
 ├── cmd
 │   ├── gen
-│   │   └── gen.go # 依赖 `internal/model`
+│   │   └── gen.go # 依赖 `internal/model` 用于生成 `internal/query` 代码
 │   └── server
 │       └── server.go
 ├── config # golang配置包
@@ -45,4 +45,23 @@
 │   └── model # 数据库模型
 ├── pkg # 公共包，最多依赖 config
 │   └── tools # 直接函数，如异常处理，判断等（不需要init的工具，防止初始化影响其他包）
+```
+
+## 开发
+
+### 前端
+
+```shell
+cd ./frontend
+pnpm install
+pnpm dev
+```
+
+### 后端
+
+可查看 `scripts/scripts.nu`
+
+```shell
+# 启动后端服务器
+go run main.go
 ```

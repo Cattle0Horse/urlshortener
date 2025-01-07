@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { CreateLinkForm } from "@/components/create-link-form"
 
 export const metadata: Metadata = {
-  title: "创建短链接 | ShortLink",
+  title: "创建短链接 | URLify",
   description: "创建一个新的短链接",
 }
 

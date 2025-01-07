@@ -1,5 +1,5 @@
 server:
-    Host: "0.0.0.0"
+    Host: "192.168.3.101"
     Port: "8080"
     Prefix: ""
     Mode: "debug"
@@ -10,6 +10,9 @@ server:
     global_write_burst: 4000
     stand_alone_read_rate: 20000
     stand_alone_read_burst: 1000
+
+cors:
+    allow_origins: ["http://192.168.3.101:3000", "https://192.168.3.101:3000"]
 
 mysql:
     host: "127.0.0.1"

@@ -14,4 +14,5 @@ type Config struct {
 	Url    *Url    `yaml:"url" mapstructure:"url"`
 	TDDL   *TDDL   `yaml:"tddl" mapstructure:"tddl"`
 	Cache  *Cache  `yaml:"cache" mapstructure:"cache"`
+	Cors   *Cors   `yaml:"cors" mapstructure:"cors"`
 }
