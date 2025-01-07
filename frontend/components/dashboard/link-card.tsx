@@ -10,7 +10,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card"
 import {
   Copy,
@@ -174,11 +173,71 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
     <div>
       <Card className="group hover:shadow-md transition-all duration-200">
         <CardHeader>
-          <CardTitle className="text-xl flex items-center gap-2">
-            <span className="bg-gradient-to-r from-primary/80 to-primary text-white px-2 py-1 rounded text-sm font-normal">
-              {link.short_code}
-            </span>
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl flex items-center gap-2">
+              <span className="bg-gradient-to-r from-primary/80 to-primary text-white px-2 py-1 rounded text-sm font-normal">
+                {link.short_code}
+              </span>
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:bg-primary hover:text-white transition-colors"
+                      onClick={copyToClipboard}
+                    >
+                      <Copy className="h-4 w-4" />
+                      <span className="sr-only">复制链接</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">复制短链接</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:bg-primary hover:text-white transition-colors"
+                      onClick={() => setOpen(true)}
+                    >
+                      <Clock className="h-4 w-4" />
+                      <span className="sr-only">更新到期时间</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">更新到期时间</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                      onClick={() => setShowDeleteDialog(true)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">删除短链接</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">删除短链接</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
           <CardDescription className="mt-2 flex items-center gap-2">
             <span className="text-muted-foreground shrink-0">原始链接：</span>
             <TooltipProvider>
@@ -204,8 +263,8 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
                     <span className="sr-only">访问原始链接</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" align="end" className="max-w-[300px]">
-                  <p className="text-xs text-muted-foreground">点击访问原始链接</p>
+                <TooltipContent side="bottom" align="end">
+                  <p className="text-xs">访问原始链接</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -235,112 +294,86 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex gap-2">
-          <Button
-            variant="outline"
-            className="w-full hover:bg-primary hover:text-white transition-colors"
-            onClick={copyToClipboard}
-          >
-            <Copy className="mr-2 h-4 w-4" />
-            复制链接
-          </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="hover:bg-primary hover:text-white transition-colors"
-              >
-                <Clock className="h-4 w-4" />
-                <span className="sr-only">更新到期时间</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>更新到期时间</DialogTitle>
-                <DialogDescription>
-                  调整滑块来设置新的到期时间
-                </DialogDescription>
-              </DialogHeader>
-              <div className="py-6">
-                <div className="space-y-4">
-                  <div className="px-1">
-                    <Slider
-                      min={1}
-                      max={168}
-                      step={1}
-                      value={[duration]}
-                      onValueChange={([value]) => setDuration(value)}
-                      disabled={isUpdating}
-                    />
-                    <div className="flex items-center justify-between mt-4 text-sm">
-                      <span className="text-muted-foreground">1小时</span>
-                      <span className="font-medium text-base text-primary">{duration}小时</span>
-                      <span className="text-muted-foreground">168小时</span>
-                    </div>
-                  </div>
-                  <Button
-                    onClick={handleUpdateDuration}
-                    disabled={isUpdating}
-                    className="w-full bg-gradient-to-r from-primary to-primary/80 text-white hover:opacity-90"
-                  >
-                    {isUpdating ? (
-                      <>
-                        <Clock className="mr-2 h-4 w-4 animate-spin" />
-                        更新中...
-                      </>
-                    ) : (
-                      "确认更新"
-                    )}
-                  </Button>
+      </Card>
+
+      {/* 更新时间对话框 */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>更新到期时间</DialogTitle>
+            <DialogDescription>
+              调整滑块来设置新的到期时间
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6">
+            <div className="space-y-4">
+              <div className="px-1">
+                <Slider
+                  min={1}
+                  max={168}
+                  step={1}
+                  value={[duration]}
+                  onValueChange={([value]) => setDuration(value)}
+                  disabled={isUpdating}
+                />
+                <div className="flex items-center justify-between mt-4 text-sm">
+                  <span className="text-muted-foreground">1小时</span>
+                  <span className="font-medium text-base text-primary">{duration}小时</span>
+                  <span className="text-muted-foreground">168小时</span>
                 </div>
               </div>
-            </DialogContent>
-          </Dialog>
-          <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-            <DialogTrigger asChild>
               <Button
-                variant="outline"
-                size="icon"
-                className="hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                onClick={handleUpdateDuration}
+                disabled={isUpdating}
+                className="w-full bg-gradient-to-r from-primary to-primary/80 text-white hover:opacity-90"
               >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">删除短链接</span>
+                {isUpdating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    更新中...
+                  </>
+                ) : (
+                  "确认更新"
+                )}
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>删除短链接</DialogTitle>
-                <DialogDescription>
-                  确定要删除这个短链接吗？此操作不可撤销。
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="gap-2 sm:gap-0">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowDeleteDialog(false)}
-                >
-                  取消
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      删除中...
-                    </>
-                  ) : (
-                    "确认删除"
-                  )}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </CardFooter>
-      </Card>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 删除确认对话框 */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>删除短链接</DialogTitle>
+            <DialogDescription>
+              确定要删除这个短链接吗？此操作不可撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              取消
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  删除中...
+                </>
+              ) : (
+                "确认删除"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
