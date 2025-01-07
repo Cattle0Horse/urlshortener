@@ -7,7 +7,6 @@ import { getCookie } from "@/lib/cookies"
 import { toast } from "sonner"
 import { Loading } from "@/components/ui/loading"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { CustomPagination } from "@/components/ui/custom-pagination"
 
 interface Link {

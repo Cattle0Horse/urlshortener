@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { getCookie } from "@/lib/cookies"
-import { api } from "@/lib/api"
 import { useRouter } from "next/navigation"
 
 interface AuthContextType {
