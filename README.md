@@ -21,13 +21,6 @@
 
 ## 目录设计说明
 
-`pkg/tools`:
-`config`: 配置文件，初始化最高优先级
-`cmd/gen`: `gorm` 代码生成
-`cmd/server`: 服务启动
-`internal/global`: 提供全局可访问的，大多依赖 `config` 和 `pkg` 包
-`internal/`
-
 ```text
 ├── cmd
 │   ├── gen
