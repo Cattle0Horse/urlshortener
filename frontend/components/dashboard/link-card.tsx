@@ -12,7 +12,14 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card"
-import { Copy, Clock, ExternalLink, Eye } from "lucide-react"
+import {
+  Copy,
+  Clock,
+  ExternalLink,
+  Eye,
+  Trash2,
+  Loader2,
+} from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -20,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import {
   Tooltip,
@@ -44,8 +52,10 @@ interface LinkCardProps {
 
 export function LinkCard({ link, onUpdate }: LinkCardProps) {
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [duration, setDuration] = useState(24)
   const [open, setOpen] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   const shortUrl = `${window.location.origin}/${link.short_code}`
 
@@ -126,6 +136,37 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
       })
     } finally {
       setIsUpdating(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true)
+      const token = getCookie('token')
+      if (!token) {
+        toast.error('登录已过期', {
+          description: '请重新登录后再试'
+        })
+        return
+      }
+
+      await api.links.delete(link.short_code, token)
+      toast.success('删除成功')
+      onUpdate?.()
+      setShowDeleteDialog(false)
+    } catch (error) {
+      console.error('Failed to delete link:', error)
+      if (error instanceof Error) {
+        toast.error('删除失败', {
+          description: error.message
+        })
+      } else {
+        toast.error('删除失败', {
+          description: '请稍后重试'
+        })
+      }
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -254,6 +295,48 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
                   </Button>
                 </div>
               </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="hover:bg-destructive hover:text-destructive-foreground transition-colors"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">删除短链接</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>删除短链接</DialogTitle>
+                <DialogDescription>
+                  确定要删除这个短链接吗？此操作不可撤销。
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteDialog(false)}
+                >
+                  取消
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      删除中...
+                    </>
+                  ) : (
+                    "确认删除"
+                  )}
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </CardFooter>
