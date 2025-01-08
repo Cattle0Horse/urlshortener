@@ -61,8 +61,8 @@ const config = {
 		},
 	},
 	plugins: [
-		function({ addVariant }: PluginAPI) {
-			addVariant('forced-colors', '@media (forced-colors: active)')
+		function ({ addVariant }: PluginAPI) {
+			addVariant("forced-colors", "@media (forced-colors: active)");
 		},
 	],
 } satisfies Config;
