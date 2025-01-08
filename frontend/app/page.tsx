@@ -1,4 +1,12 @@
-import { Link2, BarChart3, Shield, Share2, ShoppingBag, MessageSquare, Presentation } from "lucide-react"
+import {
+	Link2,
+	BarChart3,
+	Shield,
+	Share2,
+	ShoppingBag,
+	MessageSquare,
+	Presentation,
+} from "lucide-react";
 
 export default function Home() {
 	return (
@@ -16,7 +24,6 @@ export default function Home() {
 								简化您的链接，提升分享体验。快速生成短链接，轻松管理和追踪。
 							</p>
 						</div>
-
 					</div>
 				</section>
 
@@ -66,19 +73,27 @@ export default function Home() {
 					<div className="container px-4 md:px-6">
 						<div className="grid gap-8 md:gap-12 lg:grid-cols-4 text-center">
 							<div className="space-y-2">
-								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">1M+</h3>
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									1M+
+								</h3>
 								<p className="text-muted-foreground">活跃用户</p>
 							</div>
 							<div className="space-y-2">
-								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">100M+</h3>
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									100M+
+								</h3>
 								<p className="text-muted-foreground">生成的短链接</p>
 							</div>
 							<div className="space-y-2">
-								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">99.9%</h3>
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									99.9%
+								</h3>
 								<p className="text-muted-foreground">服务可用性</p>
 							</div>
 							<div className="space-y-2">
-								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">24/7</h3>
+								<h3 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+									24/7
+								</h3>
 								<p className="text-muted-foreground">全天候支持</p>
 							</div>
 						</div>
@@ -133,5 +148,5 @@ export default function Home() {
 				</section>
 			</main>
 		</div>
-	)
+	);
 }
