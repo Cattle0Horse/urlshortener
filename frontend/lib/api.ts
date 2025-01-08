@@ -39,7 +39,6 @@ async function fetchAPI<T>(
 	});
 
 	const result = (await response.json()) as APIResponse<T>;
-	console.log(result);
 
 	if (result.code !== 200) {
 		// 根据错误码显示不同的错误信息
