@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { NextResponse } from "next/server";
 
 // todo: 将notFound()重定向为自定义的页面
+// https://www.nextjs.cn/docs/advanced-features/custom-error-page
 export async function GET(
 	request: Request,
 	{ params }: { params: { shortCode: string } }
@@ -22,7 +23,7 @@ export async function GET(
 		}
 		return NextResponse.redirect(location);
 	}
-	
+
 	// 处理其他非2xx响应（await json前需要检查ok，否则会抛出异常）
 	if (!response.ok) {
 		const data = await response.json();
