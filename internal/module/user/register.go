@@ -1,19 +1,19 @@
 package user
 
 import (
+	"errors"
+
 	"github.com/Cattle0Horse/url-shortener/internal/global/database"
 	"github.com/Cattle0Horse/url-shortener/internal/global/errs"
 	"github.com/Cattle0Horse/url-shortener/internal/model"
-	"github.com/Cattle0Horse/url-shortener/pkg/tools"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 type CreateRequest struct {
 	User
 }
-
-// fixme: 邮箱已存在检测失败
 
 func Create(c *gin.Context) {
 	var req CreateRequest
@@ -26,9 +26,9 @@ func Create(c *gin.Context) {
 	log.Info("Creating User", "user email", user.Email)
 	err := database.Query.User.WithContext(c.Request.Context()).Create(user)
 	switch {
-	case tools.IsDuplicateKeyError(err):
+	case errors.Is(err, gorm.ErrDuplicatedKey):
 		log.Info("email exist", "email", user.Email)
-		errs.Fail(c, errs.HasExist.WithOrigin(err))
+		errs.Fail(c, errs.HasExist.WithOrigin(errs.HasExist))
 		return
 	case err != nil:
 		log.Error("database error", "error", err)
