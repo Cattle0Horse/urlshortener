@@ -12,9 +12,9 @@ var (
 	accessExpire time.Duration
 )
 
-func Init(j *config.JWT) {
-	accessSecret = []byte(config.Get().JWT.AccessSecret)
-	accessExpire = config.Get().JWT.AccessExpire
+func Init(cfg *config.JWT) {
+	accessSecret = []byte(cfg.AccessSecret)
+	accessExpire = cfg.AccessExpire
 }
 
 type Payload struct {
