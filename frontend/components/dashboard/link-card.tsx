@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Slider } from "@/components/ui/slider";
 import { api } from "@/lib/api";
-import { getCookie } from "@/lib/cookies";
+import { useAuth } from "../auth/auth-provider";
 
 interface LinkCardProps {
 	link: {
@@ -47,6 +47,7 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 	const [duration, setDuration] = useState(24);
 	const [open, setOpen] = useState(false);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const { token } = useAuth();
 
 	const shortUrl = `${window.location.origin}/${link.short_code}`;
 
@@ -62,7 +63,6 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 			});
 		} catch (err) {
 			console.error("Failed to copy:", err);
-			// 如果 clipboard API 失败，尝试使用传统方法
 			const textarea = document.createElement("textarea");
 			textarea.value = shortUrl;
 			textarea.style.position = "fixed";
@@ -100,7 +100,6 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 
 	const openOriginalUrl = () => {
 		let url = link.original_url;
-		// Add https:// if no protocol is specified
 		if (!url.startsWith("http://") && !url.startsWith("https://")) {
 			url = "https://" + url;
 		}
@@ -110,12 +109,10 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 	const handleUpdateDuration = async () => {
 		try {
 			setIsUpdating(true);
-			const token = getCookie("token");
 			if (!token) {
 				toast.error("登录已过期");
 				return;
 			}
-
 			await api.links.update(link.short_code, duration, token);
 			toast.success("更新成功", {
 				description: `短链接有效期已更新为 ${duration} 小时`,
@@ -135,7 +132,6 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 	const handleDelete = async () => {
 		try {
 			setIsDeleting(true);
-			const token = getCookie("token");
 			if (!token) {
 				toast.error("登录已过期", {
 					description: "请重新登录后再试",
@@ -165,7 +161,11 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 
 	return (
 		<div>
-			<Card className="group hover:shadow-md transition-all duration-200">
+			<Card className={`group hover:shadow-md transition-all duration-200 ${
+				new Date(link.expiry_time) < new Date() 
+					? "border-destructive/50 bg-destructive/5" 
+					: "border-primary/50"
+			}`}>
 				<CardHeader>
 					<div className="flex items-center justify-between">
 						<CardTitle className="text-xl flex items-center gap-2">
@@ -232,12 +232,12 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 							</TooltipProvider>
 						</div>
 					</div>
-					<CardDescription className="mt-2 flex items-center gap-2">
+					<div className="mt-2 flex items-center gap-2">
 						<span className="text-muted-foreground shrink-0">原始链接：</span>
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
-									<span className="font-medium truncate flex-1 cursor-default">
+									<span className="text-sm text-muted-foreground font-medium truncate flex-1 cursor-default">
 										{link.original_url}
 									</span>
 								</TooltipTrigger>
@@ -268,7 +268,7 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 								</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
-					</CardDescription>
+					</div>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-3">
@@ -298,7 +298,6 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 				</CardContent>
 			</Card>
 
-			{/* 更新时间对话框 */}
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-md">
 					<DialogHeader>
@@ -309,7 +308,7 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 						<div className="space-y-4">
 							<div className="px-1">
 								<Slider
-									min={1}
+									min={0}
 									max={168}
 									step={1}
 									value={[duration]}
@@ -317,7 +316,7 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 									disabled={isUpdating}
 								/>
 								<div className="flex items-center justify-between mt-4 text-sm">
-									<span className="text-muted-foreground">1小时</span>
+									<span className="text-muted-foreground">立即过期</span>
 									<span className="font-medium text-base text-primary">
 										{duration}小时
 									</span>
@@ -343,7 +342,6 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 				</DialogContent>
 			</Dialog>
 
-			{/* 删除确认对话框 */}
 			<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
 				<DialogContent>
 					<DialogHeader>

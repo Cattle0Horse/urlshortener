@@ -4,16 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
-import {
-	Moon,
-	Sun,
-	Link as LinkIcon,
-	User,
-	LogOut,
-	Menu,
-} from "lucide-react";
+import { Moon, Sun, Link as LinkIcon, User, LogOut, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getCookie, removeCookie } from "@/lib/cookies";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -23,9 +15,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "../auth/auth-provider";
 
 export function Navbar() {
 	const { theme, setTheme } = useTheme();
+	const { token, email, setAuth } = useAuth();
 	const router = useRouter();
 	const pathname = usePathname();
 	const [mounted, setMounted] = useState(false);
@@ -37,8 +31,6 @@ export function Navbar() {
 	}, []);
 
 	const checkAuth = () => {
-		const token = getCookie("token");
-		const email = getCookie("email");
 		setIsLoggedIn(!!token);
 		setUserEmail(email || "");
 	};
@@ -48,10 +40,10 @@ export function Navbar() {
 	}, [pathname]);
 
 	// 每秒检查一次登录状态
-	useEffect(() => {
-		const interval = setInterval(checkAuth, 1000);
-		return () => clearInterval(interval);
-	}, []);
+	// useEffect(() => {
+	// 	const interval = setInterval(checkAuth, 1000);
+	// 	return () => clearInterval(interval);
+	// }, []);
 
 	if (!mounted) {
 		return (
@@ -73,10 +65,8 @@ export function Navbar() {
 	}
 
 	const handleLogout = () => {
-		// 清除所有 cookies
-		removeCookie("token");
-		removeCookie("email");
-		removeCookie("user_id");
+		// 清除所有用户信息
+		setAuth("", "", 0);
 
 		// 更新状态
 		setIsLoggedIn(false);
@@ -131,6 +121,9 @@ export function Navbar() {
 										<DropdownMenuItem asChild>
 											<Link href="/dashboard">仪表板</Link>
 										</DropdownMenuItem>
+										<DropdownMenuItem asChild>
+											<Link href="/create">创建短链接</Link>
+										</DropdownMenuItem>
 										<DropdownMenuItem onClick={handleLogout}>
 											<LogOut className="mr-2 h-4 w-4" />
 											退出登录
@@ -140,10 +133,10 @@ export function Navbar() {
 							) : (
 								<div className="flex items-center space-x-2">
 									<Button variant="ghost" asChild>
-										<Link href="/login">登录</Link>
+										<Link href="/auth/login">登录</Link>
 									</Button>
 									<Button asChild>
-										<Link href="/register">注册</Link>
+										<Link href="/auth/register">注册</Link>
 									</Button>
 								</div>
 							)}
@@ -192,6 +185,13 @@ export function Navbar() {
 													</Button>
 													<Button
 														variant="ghost"
+														asChild
+														className="w-full justify-start hover:bg-primary hover:text-white transition-colors"
+													>
+														<Link href="/create">创建短链接</Link>
+													</Button>
+													<Button
+														variant="ghost"
 														onClick={handleLogout}
 														className="w-full justify-start text-destructive hover:bg-destructive hover:text-destructive-foreground transition-colors"
 													>
@@ -207,13 +207,13 @@ export function Navbar() {
 													asChild
 													className="w-full justify-start hover:bg-primary hover:text-white transition-colors"
 												>
-													<Link href="/login">登录</Link>
+													<Link href="/auth/login">登录</Link>
 												</Button>
 												<Button
 													asChild
 													className="w-full justify-start bg-gradient-to-r from-primary to-primary/80 text-white hover:opacity-90"
 												>
-													<Link href="/register">注册</Link>
+													<Link href="/auth/register">注册</Link>
 												</Button>
 											</div>
 										)}

@@ -36,8 +36,8 @@ func Redirect(c *gin.Context) {
 	// 先从缓存获取
 	originalUrl, err := cache.Get(c, constant.ShortCodeCacheKey+shortCode)
 	if err == nil {
-		// 缓存命中,直接重定向，302临时重定向
-		c.Redirect(http.StatusFound, string(originalUrl))
+		// 缓存命中,直接重定向，307临时重定向
+		c.Redirect(http.StatusTemporaryRedirect, string(originalUrl))
 		return
 	}
 	if !errors.Is(err, pkgcache.ErrCacheMiss) {
@@ -72,6 +72,6 @@ func Redirect(c *gin.Context) {
 		log.Error("Failed to set cache", "error", err)
 	}
 
-	// 302临时重定向
-	c.Redirect(http.StatusFound, url.OriginalUrl)
+	// 307临时重定向
+	c.Redirect(http.StatusTemporaryRedirect, url.OriginalUrl)
 }

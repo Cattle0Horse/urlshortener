@@ -12,7 +12,7 @@ import (
 )
 
 type UpdateRequest struct {
-	Duration int `json:"duration" binding:"required,min=1,max=168"` // 168小时 = 7天
+	Duration int `json:"duration" binding:"min=0,max=168"` // 168小时 = 7天
 }
 
 func Update(c *gin.Context) {
@@ -51,7 +51,9 @@ func Update(c *gin.Context) {
 
 	// 查询短链接
 	u := database.Query.Url
-	url, err := u.WithContext(c.Request.Context()).Where(u.DeletedAt.IsNull(), u.ShortCode.Eq(shortCode)).First()
+	url, err := u.WithContext(c.Request.Context()).
+		Where(u.DeletedAt.IsNull(), u.ShortCode.Eq(shortCode)).
+		First()
 	if err != nil {
 		errs.Fail(c, errs.NotFound.WithOrigin(err))
 		return
@@ -65,12 +67,20 @@ func Update(c *gin.Context) {
 
 	// 更新过期时间
 	newExpiryTime := time.Now().Add(time.Hour * time.Duration(req.Duration))
-	_, err = u.WithContext(c.Request.Context()).Where(u.ID.Eq(url.ID)).
-		Updates(map[string]interface{}{
-			"expiry_time": newExpiryTime,
-		})
+	_, err = u.WithContext(c.Request.Context()).
+		Where(u.ID.Eq(url.ID)).
+		Updates(map[string]any{"expiry_time": newExpiryTime})
 	if err != nil {
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
+		return
+	}
+
+	if req.Duration == 0 {
+		// 如果duration为0，则表示立即过期，删除缓存
+		if err := cache.Del(c, constant.ShortCodeCacheKey+shortCode); err != nil {
+			log.Error("Failed to delete cache", "error", err)
+		}
+		errs.Success(c, nil)
 		return
 	}
 

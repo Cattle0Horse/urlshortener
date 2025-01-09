@@ -15,8 +15,9 @@ type LoginRequst struct {
 	Password string `json:"password" binding:"required,min=8,max=20"`
 }
 type LoginResponse struct {
-	Token  string `json:"token"`
-	UserID uint   `json:"user_id"`
+	AccessToken string `json:"access_token"`
+	UserID      uint   `json:"user_id"`
+	Email       string `json:"email"`
 }
 
 func Login(c *gin.Context) {
@@ -45,8 +46,9 @@ func Login(c *gin.Context) {
 		return
 	}
 	errs.Success(c, LoginResponse{
-		Token:  token,
-		UserID: userInfo.ID,
+		AccessToken: token,
+		UserID:      userInfo.ID,
+		Email:       req.Email,
 	})
 }
 

@@ -19,13 +19,14 @@ import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { loginSchema } from "@/lib/validations/auth";
 import { api } from "@/lib/api";
-import { setCookie } from "@/lib/cookies";
+import { useAuth } from "./auth-provider";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
+	const { setAuth } = useAuth();
 
 	const form = useForm<LoginFormData>({
 		resolver: zodResolver(loginSchema),
@@ -39,19 +40,15 @@ export function LoginForm() {
 		try {
 			setIsLoading(true);
 			const response = await api.auth.login(values.email, values.password);
+			console.log(response);
 
-			// 存储 token、用户信息和 email
-			setCookie("token", response.token, { expires: 7 }); // 7天有效期
-			setCookie("user_id", String(response.user_id), { expires: 7 });
-			setCookie("email", values.email, { expires: 7 });
+			setAuth(response?.access_token, response?.email, response?.user_id);
 
 			// 显示成功消息并跳转
 			toast.success("登录成功", {
 				description: "欢迎回来！即将跳转到仪表盘...",
 			});
-
 			router.push("/dashboard");
-			router.refresh();
 		} catch (error) {
 			console.error("Login failed:", error);
 			// 显示错误消息

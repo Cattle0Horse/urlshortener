@@ -1,3 +1,4 @@
+'use client'
 import { useState } from "react";
 
 function useLocalStorage(
@@ -12,7 +13,7 @@ function useLocalStorage(
 			const item = window.localStorage.getItem(key);
 			return item ? item : initialValue;
 		} catch (error) {
-			console.log(error);
+			console.log("useLocalStorage error", error);
 			return initialValue;
 		}
 	});
@@ -24,7 +25,7 @@ function useLocalStorage(
 				window.localStorage.setItem(key, value);
 			}
 		} catch (error) {
-			console.log(error);
+			console.log("useLocalStorage error", error);
 		}
 	};
 
@@ -32,4 +33,3 @@ function useLocalStorage(
 }
 
 export default useLocalStorage;
-

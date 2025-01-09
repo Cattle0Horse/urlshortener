@@ -1,16 +1,13 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { LinkCard } from "@/components/dashboard/link-card";
 import { api } from "@/lib/api";
-import { getCookie } from "@/lib/cookies";
 import { toast } from "sonner";
 import { Loading } from "@/components/ui/loading";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"
 import { CustomPagination } from "@/components/ui/custom-pagination";
-
+import { useAuth } from "@/components/auth/auth-provider";
 
 interface Link {
 	id: number;
@@ -30,6 +27,7 @@ export function LinkList() {
 	const router = useRouter();
 	const [links, setLinks] = useState<Link[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const { token } = useAuth();
 	const [pagination, setPagination] = useState<PaginationState>({
 		page: 1,
 		pageSize: 9, // 3x3 grid layout
@@ -38,10 +36,9 @@ export function LinkList() {
 
 	const fetchLinks = async (page = pagination.page) => {
 		try {
-			const token = getCookie("token");
 			if (!token) {
 				toast.error("登录已过期");
-				router.push("/login");
+				router.push("/auth/login");
 				return;
 			}
 
