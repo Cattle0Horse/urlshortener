@@ -21,30 +21,18 @@ import { Slider } from "@/components/ui/slider";
 import { Loader2, Clock, ExternalLink, LayoutDashboard } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { api } from "@/lib/api";
-import { getCookie } from "@/lib/cookies";
+import { useAuth } from "./auth/auth-provider";
+import { formSchema } from "@/lib/validations/create-link";
 
-const formSchema = z.object({
-	url: z
-		.string()
-		.url({
-			message: "请输入有效的URL地址",
-		})
-		.max(255, {
-			message: "URL长度不能超过255个字符",
-		}),
-	duration: z
-		.number()
-		.min(1, { message: "到期时长最少1小时" })
-		.max(168, { message: "到期时长最多168小时" })
-		.default(24),
-});
+type FormData = z.infer<typeof formSchema>;
 
 export function CreateLinkForm() {
 	const router = useRouter();
+	const { token } = useAuth();
 	const [isLoading, setIsLoading] = React.useState<boolean>(false);
 	const [shortUrl, setShortUrl] = React.useState<string>("");
 
-	const form = useForm<z.infer<typeof formSchema>>({
+	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			url: "",
@@ -52,15 +40,14 @@ export function CreateLinkForm() {
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: FormData) {
 		try {
 			setIsLoading(true);
-			const token = getCookie("token");
 			if (!token) {
 				toast.error("登录已过期", {
 					description: "请重新登录后再试",
 				});
-				router.push("/login");
+				router.push("/auth/login");
 				return;
 			}
 
@@ -84,20 +71,13 @@ export function CreateLinkForm() {
 			});
 
 			// 重置表单
-			form.reset({
-				url: "",
-				duration: 24,
-			});
+			form.reset({ url: "", duration: 24 });
 		} catch (error) {
 			console.error("Failed to create link:", error);
 			if (error instanceof Error) {
-				toast.error("创建失败", {
-					description: error.message,
-				});
+				toast.error("创建失败", { description: error.message });
 			} else {
-				toast.error("创建失败", {
-					description: "请稍后重试",
-				});
+				toast.error("创建失败", { description: "请稍后重试" });
 			}
 		} finally {
 			setIsLoading(false);

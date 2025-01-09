@@ -1,15 +1,28 @@
-import { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LinkList } from "@/components/dashboard/link-list";
 import { Plus } from "lucide-react";
-
-export const metadata: Metadata = {
-	title: "仪表板 | URLify",
-	description: "管理您的短链接",
-};
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/auth-provider";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
+	const { isAuth } = useAuth();
+	const router = useRouter();
+	/*
+	// 根据React的规则，不能在渲染过程中执行导航操作，因为这会导致状态更新。
+	if (isAuth) {
+		router.push("/dashboard");
+	}
+	*/
+	useEffect(() => {
+		if (!isAuth) {
+			router.push("/auth/login");
+		}
+	}, [router, isAuth]);
+
 	return (
 		<div className="container py-8">
 			<div className="flex flex-col gap-8">

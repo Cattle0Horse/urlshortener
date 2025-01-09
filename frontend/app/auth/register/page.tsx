@@ -42,7 +42,7 @@ export default function RegisterPage() {
 									<p className="text-sm text-muted-foreground">
 										已有账号？{" "}
 										<Link
-											href="/login"
+											href="/auth/login"
 											className="text-primary hover:text-primary/80 font-medium transition-colors"
 										>
 											立即登录

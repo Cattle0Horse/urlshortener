@@ -1,99 +1,62 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { getCookie } from "@/lib/cookies";
-import { api } from "@/lib/api"
-import { useRouter } from "next/navigation";
+import { createContext, use } from "react";
+import { isTokenExpired } from "@/lib/token";
+import useLocalStorage from "@/hooks/use-localstorage";
 
+type AuthProviderProps = {
+	children: React.ReactNode;
+};
 
-interface AuthContextType {
-	isAuthenticated: boolean;
-	isLoading: boolean;
-	user: {
-		id: string;
-		email: string;
-	} | null;
-}
+type AuthProviderState = {
+	token: string;
+	email: string;
+	isAuth: boolean;
+	userId: number;
+	setAuth: (token: string, email: string, userId: number) => void;
+};
 
-const AuthContext = createContext<AuthContextType>({
-	isAuthenticated: false,
-	isLoading: true,
-	user: null,
+const AuthProviderContext = createContext<AuthProviderState>({
+	token: "",
+	email: "",
+	userId: 0,
+	isAuth: false,
+	setAuth: () => null,
 });
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const [authState, setAuthState] = useState<AuthContextType>({
-		isAuthenticated: false,
-		isLoading: true,
-		user: null,
-	});
-	const router = useRouter();
+export function AuthProvider({ children }: AuthProviderProps) {
+	const [email, setEmail] = useLocalStorage("email", "");
+	const [token, setToken] = useLocalStorage("token", "");
+	const [userId, setUserId] = useLocalStorage("user_id", "");
+	const user_id = parseInt(userId);
 
-	useEffect(() => {
-		async function checkAuth() {
-			const token = getCookie("token");
-			const user_id = getCookie("user_id");
-			const email = getCookie("email");
+	const isAuth = !isTokenExpired(token) && user_id !== 0 && email !== "";
 
-			// 严格检查 cookie 值
-			if (
-				typeof token !== "string" ||
-				typeof user_id !== "string" ||
-				typeof email !== "string" ||
-				token.trim() === "" ||
-				user_id.trim() === "" ||
-				email.trim() === ""
-			) {
-				setAuthState({
-					isAuthenticated: false,
-					isLoading: false,
-					user: null,
-				});
-				// 清除无效的 cookie
-				document.cookie =
-					"token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-				document.cookie =
-					"user_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-				document.cookie =
-					"email=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-				return;
-			}
-
-			try {
-				setAuthState({
-					isAuthenticated: true,
-					isLoading: false,
-					user: {
-						id: user_id,
-						email: email,
-					},
-				});
-			} catch (error) {
-				// 清除无效的 cookie
-				document.cookie =
-					"token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-				document.cookie =
-					"user_id=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-				document.cookie =
-					"email=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-
-				setAuthState({
-					isAuthenticated: false,
-					isLoading: false,
-					user: null,
-				});
-				router.push("/login");
-			}
-		}
-
-		checkAuth();
-	}, [router, setAuthState]);
+	const value = {
+		token: token,
+		email: email,
+		userId: user_id,
+		isAuth: isAuth,
+		setAuth: (token: string, email: string, userId: number) => {
+			setToken(token);
+			setEmail(email);
+			setUserId(String(userId));
+		},
+	};
 
 	return (
-		<AuthContext.Provider value={authState}>{children}</AuthContext.Provider>
+		<AuthProviderContext.Provider value={value}>
+			{children}
+		</AuthProviderContext.Provider>
 	);
 }
 
-export function useAuth() {
-	return useContext(AuthContext);
-}
+export const useAuth = () => {
+	const context = use(AuthProviderContext);
+
+	if (context === undefined) {
+		throw new Error("useAuth must be use within a AuthProvider");
+	}
+
+	return context;
+};

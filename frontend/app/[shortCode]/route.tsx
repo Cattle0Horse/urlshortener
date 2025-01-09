@@ -1,3 +1,4 @@
+'use client'
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";

@@ -29,7 +29,8 @@ export default function LoginPage() {
 								欢迎回来
 							</h1>
 							<p className="text-muted-foreground text-center max-w-sm">
-								登录您的账户，开启高效的链接管理之旅
+								{" "}
+								登录您的账户，开启高效的链接管理之旅{" "}
 							</p>
 						</div>
 
@@ -42,7 +43,7 @@ export default function LoginPage() {
 									<p className="text-sm text-muted-foreground">
 										还没有账号？{" "}
 										<Link
-											href="/register"
+											href="/auth/register"
 											className="text-primary hover:text-primary/80 font-medium transition-colors"
 										>
 											立即注册

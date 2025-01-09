@@ -21,12 +21,8 @@ import { api } from "@/lib/api";
 
 const formSchema = z
 	.object({
-		email: z.string().email({
-			message: "请输入有效的邮箱地址",
-		}),
-		password: z.string().min(8, {
-			message: "密码至少需要8个字符",
-		}),
+		email: z.string().email({ message: "请输入有效的邮箱地址" }),
+		password: z.string().min(8, { message: "密码至少需要8个字符" }),
 		confirmPassword: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
@@ -52,22 +48,13 @@ export default function RegisterForm() {
 
 		try {
 			await api.auth.register(values.email, values.password);
-
 			// 显示成功消息
-			toast.success("注册成功", {
-				description: "正在跳转到登录页面...",
-			});
-
-			// 延迟跳转以显示成功消息
-			setTimeout(() => {
-				router.push("/login");
-			}, 1000);
+			toast.success("注册成功", { description: "正在跳转到登录页面..." });
+			router.push("/auth/login");
 		} catch (error) {
 			// 显示详细的错误信息
 			if (error instanceof Error) {
-				toast.error("注册失败", {
-					description: error.message || "请稍后重试",
-				});
+				toast.error("注册失败", { description: error.message || "请稍后重试" });
 			} else {
 				toast.error("注册失败", {
 					description: "该邮箱可能已被注册，请尝试直接登录",

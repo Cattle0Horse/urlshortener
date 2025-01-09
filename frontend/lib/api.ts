@@ -1,5 +1,4 @@
-import { API_URL } from "./config";
-import { removeCookie } from "./cookies";
+import { API_URL } from "@/lib/config";
 
 interface RequestOptions extends RequestInit {
 	token?: string;
@@ -50,12 +49,8 @@ async function fetchAPI<T>(
 			case 40004:
 				throw new Error(result.msg || "密码错误");
 			case 40005:
-				// 清除无效的token
-				removeCookie("token");
 				throw new Error(result.msg || "无效的token");
 			case 40007:
-				// 清除未授权的token
-				removeCookie("token");
 				throw new Error(result.msg || "未授权");
 			case 50002:
 				throw new Error(result.msg || "数据库错误");
@@ -68,8 +63,9 @@ async function fetchAPI<T>(
 }
 
 interface LoginResponse {
-	token: string;
+	access_token: string;
 	user_id: number;
+	email: string;
 }
 
 interface ListResponse {
