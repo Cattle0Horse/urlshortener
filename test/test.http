@@ -1,5 +1,5 @@
-@hostname = http://localhost
-@port = 9090
+@hostname = http://192.168.3.101
+@port = 8080
 @host = {{hostname}}:{{port}}
 @contentType = application/json
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzYyMjM4OTIsImlhdCI6MTczNjEzNzQ5Mn0.KJj-4s0iMZN2K3BkwP-yq0hSSJ3KJSuiYu5iw-TTQ-Q

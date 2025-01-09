@@ -12,7 +12,7 @@ server:
     stand_alone_read_burst: 1000
 
 cors:
-    allow_origins: ["http://cattle_horse.com", "https://cattle_horse.com"]
+    allow_origins: ["*"]
 
 mysql:
     host: "127.0.0.1"
