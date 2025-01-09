@@ -113,7 +113,6 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 				toast.error("登录已过期");
 				return;
 			}
-
 			await api.links.update(link.short_code, duration, token);
 			toast.success("更新成功", {
 				description: `短链接有效期已更新为 ${duration} 小时`,
@@ -162,7 +161,11 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 
 	return (
 		<div>
-			<Card className="group hover:shadow-md transition-all duration-200">
+			<Card className={`group hover:shadow-md transition-all duration-200 ${
+				new Date(link.expiry_time) < new Date() 
+					? "border-destructive/50 bg-destructive/5" 
+					: "border-primary/50"
+			}`}>
 				<CardHeader>
 					<div className="flex items-center justify-between">
 						<CardTitle className="text-xl flex items-center gap-2">
@@ -305,7 +308,7 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 						<div className="space-y-4">
 							<div className="px-1">
 								<Slider
-									min={1}
+									min={0}
 									max={168}
 									step={1}
 									value={[duration]}
@@ -313,7 +316,7 @@ export function LinkCard({ link, onUpdate }: LinkCardProps) {
 									disabled={isUpdating}
 								/>
 								<div className="flex items-center justify-between mt-4 text-sm">
-									<span className="text-muted-foreground">1小时</span>
+									<span className="text-muted-foreground">立即过期</span>
 									<span className="font-medium text-base text-primary">
 										{duration}小时
 									</span>
