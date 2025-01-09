@@ -45,7 +45,7 @@ func FetchAll(c *gin.Context) {
 
 	u := database.Query.Url
 	// 获取用户的所有短链接
-	urls, total, err := u.WithContext(c.Request.Context()).Where(u.UserID.Eq(userID)).FindByPage((req.Page-1)*req.Size, req.Size)
+	urls, total, err := u.WithContext(c.Request.Context()).Where(u.DeletedAt.IsNull(), u.UserID.Eq(userID)).FindByPage((req.Page-1)*req.Size, req.Size)
 	if err != nil {
 		log.Info("fetch all url", "err", err)
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
