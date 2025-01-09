@@ -14,6 +14,7 @@
 - [ ] DbProxy 数据库集群
 - [ ] 读写分离（参考 [beihai0xff/turl](https://github.com/beihai0xff/turl) ）
 - [ ] token 缓存
+- [ ] token 有效期
 - [ ] log 打印（参考 `internal/module/user/register.go`）
 - [ ] 数据库存储可以考虑换成 base62编码 前的数字，这保证了有序性，数据库查询效率更优秀（不过这导致旧键无法复用，本来也不使用）
 - [ ] 服务限流

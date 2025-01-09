@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/Cattle0Horse/url-shortener/config"
 	"github.com/Cattle0Horse/url-shortener/internal/global/database"
@@ -13,7 +12,6 @@ import (
 	"github.com/Cattle0Horse/url-shortener/internal/global/redis"
 	"github.com/Cattle0Horse/url-shortener/internal/module"
 	"github.com/Cattle0Horse/url-shortener/pkg/tools"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -47,14 +45,7 @@ func Run() {
 	}
 
 	// 跨域
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     config.Get().Cors.AllowOrigins,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	r.Use(middleware.Cors())
 	r.Use(middleware.Recovery())
 
 	for _, m := range module.Modules {
