@@ -1,8 +1,8 @@
 server:
-    Host: "192.168.3.101"
+    Host: "0.0.0.0"
     Port: "8080"
     Prefix: ""
-    Mode: "debug"
+    Mode: "release"
     readonly: false
     request_timeout: "5s"
     global_rate_limit_key: "turl_rate_limit"
@@ -12,10 +12,10 @@ server:
     stand_alone_read_burst: 1000
 
 cors:
-    allow_origins: ["*"]
+    allow_origins: ["http://localhost:3000"]
 
 mysql:
-    host: "127.0.0.1"
+    host: "mysql"
     port: "3306"
     username: "root"
     password: "123456"
@@ -38,7 +38,7 @@ tddl:
 
 cache:
     redis:
-        addrs: ["0.0.0.0:6379"]
+        addrs: ["redis:6379"]
         dial_timeout: "5s"
         max_conn: 25
         ttl: 1800s

@@ -5,3 +5,9 @@ test
 .vscode
 frontend
 scripts
+record
+deploy
+.editorconfig
+.gitignore
+README.md
+*_test.go

@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/Cattle0Horse/url-shortener/internal/global/logger"
-	"github.com/Cattle0Horse/url-shortener/test"
 )
 
 var log *slog.Logger
@@ -18,12 +17,7 @@ func (u *ModuleUser) GetName() string {
 }
 
 func (u *ModuleUser) Init() {
-	switch test.IsTest() {
-	case false:
-		log = logger.NewModule("User")
-	case true:
-		log = logger.Get()
-	}
+	log = logger.NewModule("User")
 }
 
 func selfInit() {

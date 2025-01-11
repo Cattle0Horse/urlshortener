@@ -17,12 +17,11 @@ import (
 	pkgcache "github.com/Cattle0Horse/url-shortener/pkg/cache"
 	"github.com/Cattle0Horse/url-shortener/pkg/tddl"
 	"github.com/Cattle0Horse/url-shortener/pkg/tools"
-	"github.com/Cattle0Horse/url-shortener/test"
 )
 
 var (
-	log     *slog.Logger
-	baseUrl string
+	log *slog.Logger
+	// baseUrl string
 	tddlGen tddl.TDDL
 	bloom   bloomfilter.Interface
 	cache   pkgcache.Interface
@@ -37,19 +36,14 @@ func (p *ModuleUrl) GetName() string {
 }
 
 func (p *ModuleUrl) Init() {
-	switch test.IsTest() {
-	case false:
-		log = logger.NewModule("Url")
-	case true:
-		log = logger.Get()
-	}
-	sc := config.Get().Server
+	log = logger.NewModule("Url")
+	// sc := config.Get().Server
 	// http协议
-	if sc.Port == "8080" {
-		baseUrl = "http://" + sc.Host + sc.Prefix
-	} else {
-		baseUrl = "http://" + sc.Host + ":" + sc.Port + sc.Prefix
-	}
+	// if sc.Port == "8080" {
+	// 	baseUrl = "http://" + sc.Host + sc.Prefix
+	// } else {
+	// 	baseUrl = "http://" + sc.Host + ":" + sc.Port + sc.Prefix
+	// }
 
 	var err error
 	tddlGen, err = tddl.New(database.DB)
