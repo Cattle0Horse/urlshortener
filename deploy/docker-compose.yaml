@@ -60,9 +60,8 @@ services:
     # command: ["redis-server" , "--protected-mode", "no"]
     # 持久化
     environment:
-      - REDIS_ARGS="--save 10 1"
+      REDIS_ARGS: "--save 10 1 --appendonly yes"
     volumes:
-      - ./redis.conf:/etc/redis/redis.conf
       - redis-data:/data
     restart: always
     healthcheck:

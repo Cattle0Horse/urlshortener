@@ -11,3 +11,4 @@ deploy
 .gitignore
 README.md
 *_test.go
+benchmark
