@@ -91,6 +91,7 @@ def deploy [] {
     (
         docker compose -f ./deploy/docker-compose.yaml
             -p urlshortener-net
+            -d
             up
     )
 }
