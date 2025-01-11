@@ -7,6 +7,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// TODO: 添加签名算法验证
+// TODO: 添加Issuer和Audience验证
+// TODO: 实现Token刷新机制
+// TODO: 添加Token黑名单功能
 var (
 	accessSecret []byte
 	accessExpire time.Duration

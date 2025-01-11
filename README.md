@@ -4,10 +4,10 @@
 
 - [x] 过期处理（redis中可以存储过期时间，或者redis中设置到期时间少于数据库过期时间） - 缓存数据库一致性
 - [x] 添加布隆过滤器减少缓存击穿情况的发生
+- [x] 容器化部署
 - [ ] 链接访问统计
 - [ ] 链接访问数据导出
 - [ ] 批量生成短链接功能（如提交文件）
-- [ ] Docker 部署
 - [ ] 优化连接关闭（返回 clean 接口，类似于 `contextWithCancel`，可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
 - [ ] 可观测性监控
 - [ ] 连接重试（如数据库），而非 panic（可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
@@ -49,6 +49,13 @@
 │   └── model # 数据库模型
 ├── pkg # 公共包，最多依赖 config
 │   └── tools # 直接函数，如异常处理，判断等（不需要init的工具，防止初始化影响其他包）
+```
+
+## 使用
+
+```shell
+# todo: 主容器等待依赖完全启动
+docker compose -f ./deploy/docker-compose.yaml -p urlshortener-net up
 ```
 
 ## 开发

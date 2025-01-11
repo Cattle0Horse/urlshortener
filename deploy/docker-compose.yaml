@@ -1,7 +1,8 @@
+# https://github.com/vishnubob/wait-for-it
 version: "2.4"
 
 networks:
-  url-shortener-net:
+  urlshortener-net:
     driver: bridge
 
 services:
@@ -27,31 +28,10 @@ services:
     networks:
       - urlshortener-net
 
-# todo: urlshortener-readonly
-#   urlshortener-ro:
-#     image: cattlehorse/urlshortener:latest
-#     hostname: urlshortener-ro
-#     container_name: urlshortener-ro
-#     deploy:
-#       restart_policy:
-#         condition: on-failure
-#         delay: 5s
-#         max_attempts: 3
-#         window: 120s
-#     command: "-f /app/config.yaml --readonly"
-#     volumes:
-#       - ./config.yaml:/app/config.yaml
-#     ports:
-#       - "80:8080"
-#     depends_on:
-#       mysql:
-#         condition: service_healthy
-#       redis:
-#         condition: service_healthy
-
   mysql:
     image: mysql:8.0
-    container_name: urlshortener_mysql
+    hostname: mysql
+    container_name: mysql
     ports:
       - "3306:3306"
     environment:
@@ -59,7 +39,7 @@ services:
       MYSQL_DATABASE: urlshortener
       TZ: Asia/Shanghai
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -68,15 +48,19 @@ services:
     restart: always
     networks:
       - urlshortener-net
-
   redis:
     image: redis/redis-stack-server:latest
-    container_name: urlshortener_redis
+    hostname: redis
+    container_name: redis
     ports:
       - "6379:6379"
-    command: ["redis-server" , "--protected-mode", "no"]
+    # 该命令导致启动后不加载module
+    # command: ["redis-server" , "--protected-mode", "no"]
+    # 持久化
     environment:
-      - REDIS_ARGS="--save 10 1 --appendonly yes"
+      - REDIS_ARGS="--save 10 1"
+    volumes:
+      - ./redis.conf:/etc/redis/redis.conf
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

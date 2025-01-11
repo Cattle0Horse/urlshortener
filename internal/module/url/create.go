@@ -40,8 +40,6 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	log.Info("Create Url", "request", req)
-
 	payload, ok := c.Get("payload")
 	if !ok {
 		errs.Fail(c, errs.InvaildToken.WithOrigin(errors.New("payload not found")))

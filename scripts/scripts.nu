@@ -82,3 +82,15 @@ def gen_config_struct_tag [] {
             -file $"config/($name).go"
     )}
 }
+
+def backend_build [] {
+    docker build -f ./build/Dockerfile -t cattlehorse/urlshortener:latest .
+}
+
+def deploy [] {
+    (
+        docker compose -f ./deploy/docker-compose.yaml
+            -p urlshortener-net
+            up
+    )
+}
