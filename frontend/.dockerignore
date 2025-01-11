@@ -1,0 +1,9 @@
+./node_modules
+./build
+./.next
+README.md
+.git
+.vscode
+.idea
+scripts.nu
+.editorconfig

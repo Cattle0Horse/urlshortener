@@ -15,3 +15,7 @@ def --env next_env [] {
 	$env.PORT = "80"
 	echo "设置成功,请关闭代理"
 }
+
+def frontend_build [] {
+  docker build -f ./Dockerfile -t cattlehorse/urlshortener-frontend:latest .
+}
