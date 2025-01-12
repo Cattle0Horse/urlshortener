@@ -7,7 +7,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 
 # 清理go模块缓存
-RUN go clearn -modcache
+RUN go clean -modcache
 
 # 下载依赖
 RUN go mod download

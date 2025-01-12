@@ -24,6 +24,7 @@ func Update(c *gin.Context) {
 
 	var req UpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Debug("update url", "err", err)
 		errs.Fail(c, errs.InvalidRequest.WithTips(err.Error()))
 		return
 	}
@@ -55,6 +56,7 @@ func Update(c *gin.Context) {
 		Where(u.DeletedAt.IsNull(), u.ShortCode.Eq(shortCode)).
 		First()
 	if err != nil {
+		log.Error("Failed to query url", "error", err)
 		errs.Fail(c, errs.NotFound.WithOrigin(err))
 		return
 	}
@@ -71,6 +73,7 @@ func Update(c *gin.Context) {
 		Where(u.ID.Eq(url.ID)).
 		Updates(map[string]any{"expiry_time": newExpiryTime})
 	if err != nil {
+		log.Error("Failed to update url", "error", err)
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
 		return
 	}

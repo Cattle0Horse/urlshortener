@@ -50,6 +50,7 @@ func Redirect(c *gin.Context) {
 	u := database.Query.Url
 	url, err := u.WithContext(c.Request.Context()).Where(u.DeletedAt.IsNull(), u.ShortCode.Eq(shortCode)).First()
 	if err != nil {
+		log.Error("Failed to query url", "error", err)
 		errs.Fail(c, errs.NotFound.WithOrigin(err))
 		return
 	}

@@ -2,11 +2,11 @@
 @port = 8080
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzYyMjM4OTIsImlhdCI6MTczNjEzNzQ5Mn0.KJj-4s0iMZN2K3BkwP-yq0hSSJ3KJSuiYu5iw-TTQ-Q
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3MzY3MTQ3OTcsImlhdCI6MTczNjYyODM5N30.EzWA_7KPkbiKEZBVlDbc6BMFINNapFU3XDGc1ZsUUE4
 @authorization = Bearer {{token}}
 @email = cattle_horse@163.com
 @password = Abc123456
-@shortCode = Ln9Nuxx
+@shortCode = LobBP
 
 ### 健康检查
 GET {{host}}/ping HTTP/1.1
@@ -57,5 +57,5 @@ DELETE {{host}}/api/url/{{shortCode}} HTTP/1.1
 Authorization: {{authorization}}
 
 ### 重定向短链接
-GET {{host}}/{{shortCode}} HTTP/1.1
+GET {{host}}/api/url/{{shortCode}} HTTP/1.1
 

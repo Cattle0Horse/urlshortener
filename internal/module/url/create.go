@@ -53,6 +53,7 @@ func Create(c *gin.Context) {
 	// 生成短链接
 	shortCode, err := GenerateShortCode(c)
 	if err != nil {
+		log.Error("Failed to generate short code", "error", err)
 		errs.Fail(c, errs.FailedGenShortCode.WithOrigin(err))
 		return
 	}
@@ -60,12 +61,14 @@ func Create(c *gin.Context) {
 
 	// 加入短代码到布隆过滤器
 	if err := bloom.Add(c, url.ShortCode); err != nil {
+		log.Error("Failed to add short code to bloom filter", "error", err)
 		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
 		return
 	}
 
 	// 保存到数据库
 	if err := database.Query.Url.WithContext(c.Request.Context()).Create(&url); err != nil {
+		log.Error("Failed to create url", "error", err)
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
 		return
 	}

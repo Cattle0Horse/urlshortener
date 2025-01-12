@@ -38,7 +38,7 @@ func FetchAll(c *gin.Context) {
 
 	var req FetchAllRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
-		log.Info("fetch all url", "err", err)
+		log.Debug("fetch all url", "err", err)
 		errs.Fail(c, errs.InvalidRequest.WithOrigin(err))
 		return
 	}
@@ -49,7 +49,7 @@ func FetchAll(c *gin.Context) {
 		Where(u.DeletedAt.IsNull(), u.UserID.Eq(userID)).
 		FindByPage((req.Page-1)*req.Size, req.Size)
 	if err != nil {
-		log.Info("fetch all url", "err", err)
+		log.Error("fetch all url", "err", err)
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
 		return
 	}

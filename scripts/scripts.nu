@@ -90,8 +90,19 @@ def backend_build [] {
 def deploy [] {
     (
         docker compose -f ./deploy/docker-compose.yaml
-            -p urlshortener-net
-            -d
-            up
+            -p urlshortener
+            up -d
+    )
+}
+
+def backend_build_debug [] {
+    docker build -f ./build/Dockerfile -t cattlehorse/urlshortener-debug:latest .
+}
+
+def deploy_debug [] {
+    (
+        docker compose -f ./deploy/debug/docker-compose.yaml
+            -p urlshortener-debug
+            up -d
     )
 }

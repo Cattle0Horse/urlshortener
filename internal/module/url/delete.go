@@ -42,6 +42,7 @@ func Delete(c *gin.Context) {
 	u := database.Query.Url
 	url, err := u.WithContext(c.Request.Context()).Where(u.DeletedAt.IsNull(), u.ShortCode.Eq(shortCode)).First()
 	if err != nil {
+		log.Error("Failed to query url", "error", err)
 		errs.Fail(c, errs.NotFound.WithOrigin(err))
 		return
 	}
@@ -54,6 +55,7 @@ func Delete(c *gin.Context) {
 
 	// 删除数据库记录(软删除)
 	if _, err = u.WithContext(c.Request.Context()).Where(u.ID.Eq(url.ID)).Delete(); err != nil {
+		log.Error("Failed to delete url", "error", err)
 		errs.Fail(c, errs.ErrDatabase.WithOrigin(err))
 		return
 	}

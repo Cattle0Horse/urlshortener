@@ -1,0 +1,78 @@
+# https://github.com/vishnubob/wait-for-it
+version: "2.4"
+
+networks:
+  urlshortener-net-debug:
+    driver: bridge
+
+services:
+  urlshortener:
+    image: cattlehorse/urlshortener-debug:latest
+    hostname: urlshortener
+    container_name: urlshortener
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - ./config.yaml:/app/config.yaml
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - urlshortener-net-debug
+
+  mysql:
+    image: mysql:8.0
+    hostname: mysql
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: urlshortener
+      TZ: Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    privileged: true
+    restart: always
+    networks:
+      - urlshortener-net-debug
+    volumes:
+      - mysql-data:/var/lib/mysql
+  redis:
+    image: redis/redis-stack-server:latest
+    hostname: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    # 该命令导致启动后不加载module
+    # command: ["redis-server" , "--protected-mode", "no"]
+    # 持久化
+    environment:
+      REDIS_ARGS: "--save 10 1 --appendonly yes"
+    volumes:
+      - redis-data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - urlshortener-net-debug
+
+volumes:
+  redis-data:
+  mysql-data:
