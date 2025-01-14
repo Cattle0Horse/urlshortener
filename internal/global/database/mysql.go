@@ -50,6 +50,6 @@ func Init() {
 	tools.PanicOnErr(DB.AutoMigrate(model.User{}, model.Url{}, model.Sequence{}))
 	// 修改字段排序规则为大小写敏感
 	// TODO: 优雅的处理
-	DB.Exec("ALTER TABLE url MODIFY COLUMN short_code VARCHAR(255) COLLATE utf8_bin;")
+	DB.Exec("ALTER TABLE url MODIFY COLUMN short_code VARCHAR(255) COLLATE utf8mb4_bin;")
 	Query = query.Use(DB)
 }
