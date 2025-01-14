@@ -7,6 +7,7 @@ import (
 
 func (u *ModuleUrl) InitRouter(r *gin.RouterGroup) {
 	r.GET("/api/url/:code", Redirect) // 重定向到原始链接
+	r.GET("/:code", Redirect)         // 重定向到原始链接
 
 	//添加鉴权中间件
 	r.Group("/api", middleware.Auth()).

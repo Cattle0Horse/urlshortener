@@ -12,7 +12,7 @@ server:
     stand_alone_read_burst: 1000
 
 cors:
-    allow_origins: ["http://localhost:3000"]
+    allow_origins: ["http://localhost:3000", "http://localhost:5173"]
 
 mysql:
     host: "mysql"
