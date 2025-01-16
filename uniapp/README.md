@@ -25,6 +25,6 @@ npm run build:h5
 ```shell
 # 安装 http-server
 npm install -g http-server
-# 运行
-http-server ./dist/build/h5
+# 运行在5173端口
+http-server -p 5173 ./dist/build/h5
 ```
