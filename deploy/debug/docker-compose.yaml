@@ -60,7 +60,7 @@ services:
     # command: ["redis-server" , "--protected-mode", "no"]
     # 持久化并去除保护模式（只接受本地的连接）
     environment:
-      REDIS_ARGS: "--save 10 1 --appendonly yes --protected no"
+      REDIS_ARGS: "--save 10 1 --appendonly yes --protected-mode no"
     restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
