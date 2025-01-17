@@ -1,10 +1,11 @@
 package logger
 
 import (
-	"github.com/Cattle0Horse/url-shortener/config"
 	"log/slog"
 	"os"
 	"sync"
+
+	"github.com/Cattle0Horse/url-shortener/config"
 )
 
 var (

@@ -2,10 +2,11 @@ package errs
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/Cattle0Horse/url-shortener/config"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"net/http"
 )
 
 type ResponseBody struct {

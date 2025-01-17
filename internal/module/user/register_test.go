@@ -2,12 +2,13 @@ package user
 
 import (
 	"context"
+	"testing"
+
 	"github.com/Cattle0Horse/url-shortener/internal/global/database"
 	"github.com/Cattle0Horse/url-shortener/internal/global/errs"
 	"github.com/Cattle0Horse/url-shortener/pkg/tools"
 	"github.com/Cattle0Horse/url-shortener/test"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestCreate(t *testing.T) {
