@@ -13,3 +13,5 @@ README.md
 *_test.go
 benchmark
 uniapp
+.git
+node_modules

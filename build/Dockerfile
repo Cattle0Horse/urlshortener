@@ -16,10 +16,10 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 
-FROM alpine:latest
+FROM alpine:latest AS production
 
-# 安装ca-certificates以支持HTTPS,
-RUN apk --no-cache add ca-certificates
+# 安装ca-certificates管理CA证书，tzdata 管理时区信息
+RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /app
 COPY --from=builder /app/main .
