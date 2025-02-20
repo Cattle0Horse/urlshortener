@@ -8,7 +8,9 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// RateLimiter 限流中间件
+// RateLimiter 限流中间件（ token bucket 算法）
+// r: 令牌桶的容量，即每秒生成令牌的数量
+// b: 令牌桶的填充速度，即每秒向桶中放入令牌的数量
 func RateLimiter(r rate.Limit, b int) gin.HandlerFunc {
 	limiter := rate.NewLimiter(r, b)
 

@@ -49,7 +49,7 @@ func Run() {
 	r.Use(middleware.Recovery())
 
 	for _, m := range module.Modules {
-		log.Info("Init Router", m.GetName())
+		log.Info(fmt.Sprintf("Init Module: %s", m.GetName()))
 		m.InitRouter(r.Group(cfg.Prefix))
 	}
 	err := r.Run(cfg.Host + ":" + cfg.Port)

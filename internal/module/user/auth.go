@@ -52,10 +52,10 @@ func Login(c *gin.Context) {
 	})
 }
 
-type MeResponse struct {
-	ID    uint   `json:"id"`
-	Email string `json:"email"`
-}
+// type MeResponse struct {
+// 	ID    uint   `json:"id"`
+// 	Email string `json:"email"`
+// }
 
 // TODO: token缓存
 // func Me(c *gin.Context) {

@@ -1,30 +1,27 @@
 # URLify
 
-## Feature
+## Todo
 
-- [x] 过期处理（redis中可以存储过期时间，或者redis中设置到期时间少于数据库过期时间） - 缓存数据库一致性
-- [x] 添加布隆过滤器减少缓存击穿情况的发生
-- [x] 容器化部署
-- [ ] 容器化开发测试环境分离部署脚本
-- [ ] 优雅的退出
-- [ ] 链接访问统计
-- [ ] 优化连接关闭（返回 clean 接口，类似于 `contextWithCancel`，可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
-- [ ] 可观测性监控
-- [ ] 连接重试（如数据库），而非 panic（可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
-- [ ] DbProxy 数据库集群
-- [ ] 读写分离（参考 [beihai0xff/turl](https://github.com/beihai0xff/turl) ）
-- [ ] token 有效期缩短，添加自动续期与 token 黑名单（处理登出与改密）
-- [ ] 更好的 log 打印（参考 `internal/module/user/register.go`）
-- [ ] 服务限流
-
-- [ ] 集成测试与单元测试，可以对于有依赖的内容可以借助 [testcontainers](https://github.com/testcontainers/testcontainers-go)
+-   [x] 过期处理（redis 中可以存储过期时间，或者 redis 中设置到期时间少于数据库过期时间） - 缓存数据库一致性
+-   [x] 添加布隆过滤器减少缓存击穿情况的发生
+-   [x] 容器化部署
+-   [ ] 优雅的退出
+-   [ ] 链接访问统计
+-   [ ] 优化连接关闭（返回 clean 接口，类似于 `contextWithCancel`，可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
+-   [ ] 连接重试（如数据库），而非 panic（可参考 [Apache-Answer](https://github.com/apache/incubator-answer) ）
+-   [ ] 读写分离（参考 [beihai0xff/turl](https://github.com/beihai0xff/turl) ）
+-   [ ] token 有效期缩短，添加自动续期与 token 黑名单（处理登出与改密）
+-   [ ] 服务限流
+-   [ ] 更好的集成测试与单元测试，可以对于有依赖的内容可以借助 [testcontainers](https://github.com/testcontainers/testcontainers-go)
+-   [ ] 可观测性监控
 
 待考虑项：
 
-- [ ] 批量生成短链接功能（如提交文件）
-- [ ] 链接访问数据导出
-- [ ] ~~相同 url 可以幂等~~
-- [ ] ~~过期短链的处理（如轮询扫描全表，删除过期的）~~
+-   [ ] 更好的 log 打印（参考 `internal/module/user/register.go`）
+-   [ ] 批量生成短链接功能（如提交文件）
+-   [ ] 链接访问数据导出
+-   [ ] ~~相同 url 可以幂等~~
+-   [ ] ~~过期短链的处理（如轮询扫描全表，删除过期的）~~
 
 ## 目录设计说明
 
