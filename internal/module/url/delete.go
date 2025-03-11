@@ -66,6 +66,7 @@ func Delete(c *gin.Context) {
 	}
 
 	// 不删除布隆过滤器中的记录，这需要重建，可以选择定时重建
+	// todo: 使用布谷鸟过滤器替换布隆过滤器，这支持删除操作
 	// if err := bloom.Delete(c, shortCode); err != nil {
 	// 	log.Error("Failed to delete bloom filter", "error", err)
 	// }

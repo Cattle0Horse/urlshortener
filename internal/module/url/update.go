@@ -94,6 +94,7 @@ func Update(c *gin.Context) {
 		ttl = cacheTTL
 	}
 
+	// bug: 更新缓存会导致数据不一致，应该删除缓存，但仍有小概率出现数据不一致，可以通过延迟双删解决
 	// 更新缓存
 	if err := cache.Set(c, constant.ShortCodeCacheKey+shortCode, []byte(url.OriginalUrl), ttl); err != nil {
 		log.Error("Failed to set cache", "error", err)
