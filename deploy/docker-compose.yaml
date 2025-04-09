@@ -28,6 +28,24 @@ services:
     networks:
       - urlshortener-net
 
+  frontend:
+    image: cattlehorse/urlshortener-frontend:latest
+    hostname: frontend
+    container_name: frontend
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    ports:
+      - "3000:3000"
+    depends_on:
+      urlshortener:
+        condition: service_healthy
+    networks: 
+      - urlshortener-net
+
   mysql:
     image: mysql:8.0
     hostname: mysql
