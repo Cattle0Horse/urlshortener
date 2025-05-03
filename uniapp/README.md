@@ -28,3 +28,13 @@ npm install -g http-server
 # 运行在5173端口
 http-server -p 5173 ./dist/build/h5
 ```
+
+## 容器化编译
+
+```shell
+docker build -t uniapp-urlify .
+```
+
+```shell
+docker run -it -p 5173:5173 uniapp-urlify
+```

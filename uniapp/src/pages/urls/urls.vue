@@ -31,7 +31,7 @@
 import { ref, onMounted } from "vue";
 import api, { type UrlItem } from "@/services/api";
 
-const host = "http://localhost:8080";
+const host = "http://localhost";
 const urls = ref<UrlItem[]>([]);
 const currentPage = ref(1);
 const pageSize = 10;

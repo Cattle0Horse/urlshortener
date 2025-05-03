@@ -1,0 +1,7 @@
+dist/
+.git/
+.gitignore
+.editorconfig
+node_modules/
+README.md
+Dockerfile

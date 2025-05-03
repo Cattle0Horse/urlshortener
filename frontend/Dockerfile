@@ -6,21 +6,15 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-# COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-# RUN \
-#   if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-#   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-#   elif [ -f package-lock.json ]; then npm ci; \
-#   else echo "Lockfile not found." && exit 1; \
-#   fi
+RUN npm install -g pnpm
 
 COPY package.json pnpm-lock.yaml* ./
-RUN npm install -g pnpm && pnpm i --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 
 	# Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
+RUN npm install -g pnpm
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -39,7 +33,7 @@ COPY . .
 #   else echo "Lockfile not found." && exit 1; \
 #   fi
 
-RUN npm install -g pnpm && pnpm run build
+RUN pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner

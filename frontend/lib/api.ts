@@ -86,13 +86,13 @@ interface CreateResponse {
 export const api = {
 	auth: {
 		register: (email: string, password: string) =>
-			fetchAPI("/api/auth/register", {
+			fetchAPI("/auth/register", {
 				method: "POST",
 				body: JSON.stringify({ email, password }),
 			}),
 
 		login: (email: string, password: string): Promise<LoginResponse> =>
-			fetchAPI("/api/auth/login", {
+			fetchAPI("/auth/login", {
 				method: "POST",
 				body: JSON.stringify({ email, password }),
 			}),
@@ -103,7 +103,7 @@ export const api = {
 			data: { url: string; duration: number },
 			token: string
 		): Promise<CreateResponse> =>
-			fetchAPI("/api/url", {
+			fetchAPI("/url", {
 				method: "POST",
 				body: JSON.stringify({
 					original_url: data.url,
@@ -113,7 +113,7 @@ export const api = {
 			}),
 
 		list: (token: string, page = 1, size = 10): Promise<ListResponse> =>
-			fetchAPI("/api/urls", {
+			fetchAPI("/urls", {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -121,20 +121,20 @@ export const api = {
 			}),
 
 		update: (id: string, duration: number, token: string) =>
-			fetchAPI(`/api/url/${id}`, {
+			fetchAPI(`/url/${id}`, {
 				method: "PATCH",
 				body: JSON.stringify({ duration }),
 				token,
 			}),
 
 		delete: (id: string, token: string) =>
-			fetchAPI(`/api/url/${id}`, {
+			fetchAPI(`/url/${id}`, {
 				method: "DELETE",
 				token,
 			}),
 
 		resolve: (shortCode: string): Promise<{ original_url: string }> => {
-			return fetchAPI(`/api/url/${shortCode}`);
+			return fetchAPI(`/url/${shortCode}`);
 		},
 	},
 };
