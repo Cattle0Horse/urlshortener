@@ -63,7 +63,8 @@ func Create(c *gin.Context) {
 	if err := bloom.Add(c, url.ShortCode); err != nil {
 		log.Error("Failed to add short code to bloom filter", "error", err)
 		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
-		return
+		// 不退出
+		// return
 	}
 
 	// 保存到数据库

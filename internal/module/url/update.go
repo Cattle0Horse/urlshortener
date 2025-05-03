@@ -42,9 +42,7 @@ func Update(c *gin.Context) {
 	if err != nil {
 		log.Error("Failed to check bloom filter", "error", err)
 		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
-		return
-	}
-	if !exists {
+	} else if !exists {
 		// 布隆过滤器显示一定不存在
 		errs.Fail(c, errs.NotFound.WithTips("url not found"))
 		return
