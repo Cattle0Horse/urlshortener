@@ -45,7 +45,9 @@ func Run() {
 	}
 
 	// 跨域
-	r.Use(middleware.Cors())
+	if !config.Get().Cors.Disabled {
+		r.Use(middleware.Cors())
+	}
 	r.Use(middleware.Recovery())
 
 	for _, m := range module.Modules {
