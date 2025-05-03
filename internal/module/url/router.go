@@ -10,12 +10,11 @@ import (
 func (u *ModuleUrl) InitRouter(r *gin.RouterGroup) {
 	r.Group("", middleware.RateLimiter(rate.Limit(
 		config.Get().Server.StandAloneReadRate), config.Get().Server.StandAloneReadBurst)).
-		GET("/api/url/:code", Redirect). // 重定向到原始链接
-		GET("/:code", Redirect)          // 重定向到原始链接
+		GET("/url/:code", Redirect) // 重定向到原始链接
 
 	if !config.Get().Server.Readonly {
 		//添加鉴权中间件
-		r.Group("/api", middleware.Auth()).
+		r.Group("", middleware.Auth()).
 			GET("/urls", FetchAll).       // 获取用户的所有短链接
 			POST("/url", Create).         // 创建短链接
 			DELETE("/url/:code", Delete). // 删除短链接
