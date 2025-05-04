@@ -63,6 +63,7 @@ func (p *ModuleUrl) Init() {
 		if errors.Is(err, bloomfilter.ErrBloomFilterAlreadyExists) {
 			log.Info("bloom filter already exists")
 		} else {
+			// todo: 缓存无法使用，不应该阻止程序正常运行
 			panic(err)
 		}
 	}

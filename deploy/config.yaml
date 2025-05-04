@@ -40,7 +40,7 @@ tddl:
 cache:
     redis:
         addrs: ["redis:6379"]
-        dial_timeout: "5s"
+        dial_timeout: "300ms"
         max_conn: 25
         ttl: 1800s
     remote_cache_ttl: 1800s

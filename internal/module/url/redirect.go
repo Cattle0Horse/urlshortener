@@ -24,7 +24,8 @@ func Redirect(c *gin.Context) {
 	exists, err := PreCheckCode(c.Request.Context(), []byte(shortCode))
 	if err != nil {
 		log.Error("Failed to check bloom filter", "error", err)
-		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
+		// errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
+		// return
 	} else if !exists {
 		// 布隆过滤器显示一定不存在
 		errs.Fail(c, errs.NotFound.WithTips("url not found"))
@@ -40,7 +41,7 @@ func Redirect(c *gin.Context) {
 	}
 	if !errors.Is(err, pkgcache.ErrCacheMiss) {
 		log.Error("Failed to get cache", "error", err)
-		errs.Fail(c, errs.ErrCache.WithOrigin(err))
+		// errs.Fail(c, errs.ErrCache.WithOrigin(err))
 	}
 
 	// 缓存未命中,从数据库获取

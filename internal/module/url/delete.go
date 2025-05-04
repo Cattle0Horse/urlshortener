@@ -29,8 +29,8 @@ func Delete(c *gin.Context) {
 	exists, err := PreCheckCode(c.Request.Context(), []byte(shortCode))
 	if err != nil {
 		log.Error("Failed to check bloom filter", "error", err)
-		errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
 		// 不退出
+		// errs.Fail(c, errs.ErrBloomFilter.WithOrigin(err))
 		// return
 	} else if !exists {
 		// 布隆过滤器显示一定不存在

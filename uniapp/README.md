@@ -38,3 +38,9 @@ docker build -t uniapp-urlify .
 ```shell
 docker run -it -p 5173:5173 uniapp-urlify
 ```
+
+## Todo
+
+1. 重定向逻辑处理，使用nginx部署后，点击登录并不会重定向至首页
+2. 创建短链接后，自动刷新短链接列表
+3. 短链接列表页显示到期时间

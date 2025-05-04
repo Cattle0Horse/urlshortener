@@ -8,24 +8,14 @@ export async function GET(
   request: Request,
   { params }: { params: { shortCode: string } }
 ) {
-  const url = `${API_URL}/url/${params.shortCode}`;
+  // todo: 处理nginx路由重定向
+  // const url = `${API_URL}/url/${params.shortCode}`;
+  const url = `http://urlshortener:8080/url/${params.shortCode}`;
   // try {
   const response = await fetch(url, {
     headers: request.headers,
     redirect: "manual",
   });
-  // bug:
-  //  ⨯ TypeError: fetch failed
-  //     at node:internal/deps/undici/undici:13392:13
-  //     at process.processTicksAndRejections (node:internal/process/task_queues:105:5) {
-  //   [cause]: AggregateError [ECONNREFUSED]:
-  //       at internalConnectMultiple (node:net:1121:18)
-  //       at afterConnectMultiple (node:net:1688:7)
-  //       at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17) {
-  //     code: 'ECONNREFUSED',
-  //     [errors]: [ [Error], [Error] ]
-  //   }
-  // }
 
   // 处理重定向
   if (response.status === 307) {
