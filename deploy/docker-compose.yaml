@@ -10,6 +10,8 @@ services:
     hostname: urlshortener
     container_name: urlshortener
     restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai # 设置为上海时区
     volumes:
       - ./config.yaml:/app/config.yaml
     ports:
@@ -23,6 +25,8 @@ services:
   frontend:
     image: cattlehorse/urlshortener-frontend:latest
     hostname: frontend
+    environment:
+      - TZ=Asia/Shanghai # 设置为上海时区
     container_name: frontend
     # environment: # 需要 next-runtime-env 库才能运行时指定环境变量，https://blog.innei.ren/nextjs-runtime-env-and-build-once-deploy-many
     #   NEXT_PUBLIC_API_URL: http://urlshortener:8080
@@ -37,6 +41,8 @@ services:
 
   nginx:
     image: cattlehorse/urlshortener-nginx-uniapp:latest
+    environment:
+      - TZ=Asia/Shanghai # 设置为上海时区
     hostname: nginx
     container_name: nginx
     restart: unless-stopped
@@ -86,6 +92,7 @@ services:
     # 持久化并去除保护模式（只接受本地的连接）
     environment:
       REDIS_ARGS: "--save 10 1 --appendonly yes --protected-mode no"
+      TZ: Asia/Shanghai # 设置为上海时区
     volumes:
       - redis-data:/data
     restart: unless-stopped
